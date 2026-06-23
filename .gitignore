@@ -1,0 +1,10 @@
+data/raw/
+data/derived/*.rds
+data/derived/*.rda
+output/models/
+*.RData
+.Rhistory
+.Rproj.user/
+logs/
+*.log
+swapfile*

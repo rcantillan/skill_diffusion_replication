@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Skill Diffusion Explorer</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="triads_data.js"></script>
+<style>
+/* ════════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — journal-grade interactive figure
+   Palette derived from the AAAS (ggsci) family used in the manuscript.
+   ════════════════════════════════════════════════════════════════════════ */
+:root{
+  --paper:     #FFFFFF;
+  --bg:        #F1F2F0;
+  --ink:       #15181D;
+  --dim:       #565B63;
+  --faint:     #8E939B;
+  --hairline:  #E2E4E1;
+  --soft:      #ECEEEB;
+
+  /* Skill archetypes (AAAS-derived) */
+  --sc-sc-dot: #3B4992; --sc-sc-bg: #E9ECF6; --sc-sc-fg: #28346B;
+  --sc-sp-dot: #B07A00; --sc-sp-bg: #F8F0DB; --sc-sp-fg: #6B4E00;
+  --phy-dot:   #BB0021; --phy-bg:   #F9E6E8; --phy-fg:   #7A1020;
+
+  /* Log-hazard polarity */
+  --lp-pos:    #008B45;
+  --lp-pos-bg: #E6F3EC;
+  --lp-neg:    #BB0021;
+  --lp-neg-bg: #FAE9EB;
+
+  /* Status-gap zones */
+  --t1-bg:     #F4EEF8;  --t1-edge: #8A6FA8;
+  --t2-bg:     #F4F4F1;  --t2-edge: #A4A7A0;
+  --t3-bg:     #EAF3EC;  --t3-edge: #4E8E6A;
+
+  --serif: "Palatino Linotype", Palatino, "Book Antiqua", "URW Palladio L", Georgia, serif;
+  --sans:  -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono:  ui-monospace, "SF Mono", "Cascadia Code", Consolas, "Liberation Mono", Menlo, monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none!important;animation:none!important}
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);
+     font-size:12.5px;line-height:1.55;
+     -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+button{font-family:inherit}
+button:focus-visible,input:focus-visible{outline:2px solid var(--sc-sc-dot);outline-offset:2px}
+
+/* ── MASTHEAD ──────────────────────────────────────────────────────────── */
+header{background:var(--paper);border-bottom:1px solid var(--hairline);
+  padding:18px 26px 14px}
+.masthead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.eyebrow{font-size:9.5px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--faint)}
+.eyebrow b{color:var(--lp-pos);font-weight:700}
+header h1{font-family:var(--serif);font-size:21px;font-weight:600;
+  letter-spacing:-.01em;margin-top:3px}
+header h1 .amp{color:var(--faint);font-style:italic}
+.deck{font-size:11.5px;color:var(--dim);margin-top:5px;max-width:880px}
+.deck .sep{color:var(--faint);margin:0 7px}
+
+/* Signature element: the status axis */
+.status-axis{display:flex;align-items:center;gap:10px;margin-top:12px;
+  font-size:10px;color:var(--dim)}
+.axis-track{position:relative;flex:1;max-width:460px;height:5px;border-radius:3px;
+  background:linear-gradient(90deg,var(--t1-edge),var(--t2-edge) 50%,var(--t3-edge))}
+.axis-track::before,.axis-track::after{content:"";position:absolute;top:-2.5px;
+  width:10px;height:10px;border-radius:50%;background:var(--paper);
+  border:2.5px solid}
+.axis-track::before{left:-4px;border-color:var(--t1-edge)}
+.axis-track::after{right:-4px;border-color:var(--t3-edge)}
+.axis-lab{font-size:9.5px;font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.axis-lab.lo{color:var(--t1-edge)}
+.axis-lab.hi{color:var(--t3-edge)}
+
+/* ── CONTROL BAR ───────────────────────────────────────────────────────── */
+#controls{display:flex;flex-wrap:wrap;gap:8px 26px;align-items:flex-end;
+  padding:11px 26px;background:var(--paper);border-bottom:1px solid var(--hairline);
+  position:sticky;top:0;z-index:100;box-shadow:0 1px 0 rgba(21,24,29,.03)}
+.ctrl-group{display:flex;flex-direction:column;gap:4px}
+.ctrl-label{font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--faint)}
+.ctrl-hint{font-size:9px;color:var(--faint);line-height:1.4;max-width:220px;margin-top:1px}
+.btn-row{display:flex;gap:0;flex-wrap:wrap}
+.btn-row.pills{background:var(--soft);border:1px solid var(--hairline);
+  border-radius:7px;padding:2px;gap:2px}
+button.seg{background:transparent;border:none;border-radius:5px;
+  padding:4px 12px;font-size:11.5px;cursor:pointer;color:var(--dim);
+  transition:background .12s,color .12s}
+button.seg:hover{color:var(--ink)}
+button.seg.active{background:var(--paper);color:var(--ink);font-weight:600;
+  box-shadow:0 1px 2px rgba(21,24,29,.12),0 0 0 1px var(--hairline)}
+.btn-row.arch{gap:5px}
+button.arch-btn{border-radius:6px;padding:3.5px 11px 3.5px 8px;font-size:10.5px;
+  font-weight:600;cursor:pointer;border:1px solid transparent;opacity:.34;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:opacity .15s,box-shadow .15s}
+button.arch-btn::before{content:"";width:8px;height:8px;border-radius:50%;flex:none}
+button.arch-btn.active{opacity:1;box-shadow:0 1px 2px rgba(21,24,29,.08)}
+button.arch-btn.sc-sc{background:var(--sc-sc-bg);color:var(--sc-sc-fg);border-color:#C8CFE8}
+button.arch-btn.sc-sc::before{background:var(--sc-sc-dot)}
+button.arch-btn.sc-sp{background:var(--sc-sp-bg);color:var(--sc-sp-fg);border-color:#E5D8B0}
+button.arch-btn.sc-sp::before{background:var(--sc-sp-dot)}
+button.arch-btn.phy{background:var(--phy-bg);color:var(--phy-fg);border-color:#EDC4CA}
+button.arch-btn.phy::before{background:var(--phy-dot)}
+#n-slider{accent-color:var(--ink);width:84px;cursor:pointer;vertical-align:middle}
+#n-val{font-size:11.5px;font-weight:700;min-width:20px;display:inline-block;
+  text-align:center;font-family:var(--mono)}
+
+/* ── LAYOUT ────────────────────────────────────────────────────────────── */
+#main{display:grid;grid-template-columns:1fr 312px;grid-template-rows:auto 1fr;
+  min-height:calc(100vh - 168px);gap:0}
+
+/* ── MATRIX ────────────────────────────────────────────────────────────── */
+#matrix-wrap{grid-column:1;grid-row:1/3;padding:18px 14px 22px 24px;overflow-x:auto}
+table.matrix{border-collapse:separate;border-spacing:0;width:100%;min-width:640px;
+  background:var(--paper);border:1px solid var(--hairline);border-radius:10px;
+  overflow:hidden;box-shadow:0 1px 3px rgba(21,24,29,.05)}
+.matrix th.zone-hdr{text-align:left;padding:11px 13px 9px;
+  border-bottom:1px solid var(--hairline);border-left:1px solid var(--hairline);
+  font-size:12px;min-width:208px;vertical-align:top;position:relative}
+.matrix th.zone-hdr::before{content:"";position:absolute;top:0;left:0;right:0;
+  height:3px;background:var(--edge,#999)}
+.zone-glyph{font-family:var(--mono);font-size:13px;font-weight:700;
+  margin-right:7px;opacity:.85}
+.zone-title{font-family:var(--serif);font-size:14px;font-weight:600;
+  display:inline;letter-spacing:.01em}
+.zone-sub{font-size:9.5px;color:var(--dim);margin-top:2px;
+  text-transform:uppercase;letter-spacing:.07em;font-weight:600}
+.zone-pat{font-size:9px;margin-top:6px;line-height:1.5;color:var(--dim)}
+.zone-pat b{font-weight:700}
+.matrix td.meta-row{padding:5px 13px;font-size:9.5px;color:var(--faint);
+  border-bottom:1px solid var(--hairline);background:#FBFBFA;
+  font-family:var(--mono);letter-spacing:.01em}
+.matrix td.meta-row b{color:var(--dim)}
+.matrix th.corner{border-bottom:1px solid var(--hairline);background:#FBFBFA;
+  font-size:8.5px;color:var(--faint);padding:4px 3px;writing-mode:vertical-rl;
+  width:30px;font-style:italic;font-weight:400}
+.matrix td.lp-hdr{text-align:center;padding:4px 3px;
+  border-top:1px solid var(--hairline);
+  font-size:9px;font-weight:700;writing-mode:vertical-rl;text-orientation:mixed;
+  transform:rotate(180deg);
+  width:30px;white-space:nowrap;letter-spacing:.05em}
+.matrix td.cell{vertical-align:top;padding:8px 9px;cursor:pointer;
+  border-top:1px solid var(--hairline);border-left:1px solid var(--hairline);
+  transition:box-shadow .15s,background .15s;background:var(--paper)}
+.matrix td.cell:hover{background:#FCFCFB;box-shadow:inset 0 0 0 1.5px var(--faint)}
+.matrix td.cell.selected{box-shadow:inset 0 0 0 2px var(--ink)}
+
+/* cell header */
+.cell-hdr{display:flex;justify-content:space-between;align-items:center;
+  gap:6px;margin-bottom:5px}
+.cell-mean{font-family:var(--mono);font-size:9.5px;font-weight:700;
+  white-space:nowrap;padding:2px 7px;border-radius:4px}
+.cell-mean.pos{color:var(--lp-pos);background:var(--lp-pos-bg)}
+.cell-mean.neg{color:var(--lp-neg);background:var(--lp-neg-bg)}
+.cell-mean.none{color:var(--faint);background:var(--soft)}
+.cell-expected{font-size:8.5px;color:var(--faint);font-style:italic;
+  margin-bottom:6px;line-height:1.4;border-left:2px solid var(--hairline);
+  padding-left:6px}
+.arch-legend{display:flex;gap:4px;flex-wrap:wrap}
+.arch-count{border-radius:4px;padding:1px 6px;font-size:8.5px;font-weight:700;
+  white-space:nowrap;display:inline-flex;align-items:center;gap:4px;
+  font-family:var(--mono)}
+.arch-count::before{content:"";width:5px;height:5px;border-radius:50%;
+  background:currentColor;flex:none}
+
+/* triad grid — three explicit columns */
+.triad-table{display:grid;grid-template-columns:minmax(92px,134px) 50px 1fr;
+  gap:0;width:100%}
+.triad-row{display:contents}
+.triad-row.hidden > *{display:none}
+.triad-row > *{padding:2px 4px;font-size:9.5px;line-height:1.45;
+  overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+  border-bottom:1px solid #F2F3F1}
+.triad-row:hover > *{background:var(--soft)}
+.triad-skill{color:var(--ink)}
+.triad-lp{font-family:var(--mono);font-weight:600;text-align:right;
+  padding-right:6px;white-space:nowrap;font-size:9px}
+.triad-pair{color:var(--dim)}
+.triad-pair .arrow{color:var(--faint);margin:0 3px;font-family:var(--mono)}
+.th-skill,.th-lp,.th-pair{font-size:8px;color:var(--faint);font-weight:600;
+  text-transform:uppercase;letter-spacing:.08em;
+  padding:0 4px 3px;border-bottom:1px solid var(--hairline)}
+.th-lp{text-align:right;padding-right:6px}
+.arch-badge{display:inline-block;border-radius:3px;padding:0 4px;
+  font-size:7.5px;font-weight:700;margin-right:4px;vertical-align:middle;
+  font-family:var(--mono);letter-spacing:.02em}
+
+/* ── SIDE PANEL ────────────────────────────────────────────────────────── */
+#scatter-wrap{grid-column:2;grid-row:1;padding:18px 22px 6px 10px}
+.panel-card{background:var(--paper);border:1px solid var(--hairline);
+  border-radius:10px;padding:13px 14px;box-shadow:0 1px 3px rgba(21,24,29,.05)}
+#scatter-wrap h2,#info-wrap h2{font-family:var(--serif);font-size:13.5px;
+  font-weight:600;margin-bottom:3px;letter-spacing:.01em}
+#scatter-wrap .sub{font-size:9.5px;color:var(--dim);margin-bottom:8px;line-height:1.5}
+#scatter-svg{width:100%;display:block}
+
+#info-wrap{grid-column:2;grid-row:2;padding:10px 22px 22px 10px}
+#info-content{font-size:10px;color:var(--dim);line-height:1.6}
+#info-content p{margin-bottom:7px}
+#info-content .key{font-weight:700;color:var(--ink)}
+.eq{font-family:var(--mono);font-size:9px;background:var(--soft);
+  border:1px solid var(--hairline);border-radius:6px;padding:6px 9px;
+  margin:4px 0 7px;line-height:1.7;color:var(--ink);overflow-x:auto;
+  white-space:nowrap}
+.chip{display:inline-block;border-radius:4px;padding:0 6px;font-weight:700;
+  font-size:9px;font-family:var(--mono)}
+.chip.pos{color:var(--lp-pos);background:var(--lp-pos-bg)}
+.chip.neg{color:var(--lp-neg);background:var(--lp-neg-bg)}
+.footnote{color:var(--faint);font-size:9px;border-top:1px solid var(--hairline);
+  padding-top:7px;margin-top:9px}
+
+/* ── TOOLTIP ───────────────────────────────────────────────────────────── */
+#tooltip{position:fixed;background:rgba(21,24,29,.94);color:#fff;max-width:300px;
+  padding:8px 11px;border-radius:7px;font-size:10px;pointer-events:none;
+  z-index:999;max-width:240px;line-height:1.5;display:none;
+  box-shadow:0 4px 14px rgba(21,24,29,.3)}
+#tooltip .tt-num{font-family:var(--mono)}
+
+/* ── CAPTION FOOTER ────────────────────────────────────────────────────── */
+footer{border-top:1px solid var(--hairline);padding:11px 26px 14px;
+  font-size:10px;color:var(--dim);background:var(--paper);line-height:1.6}
+footer .figlab{font-family:var(--serif);font-weight:700;color:var(--ink);
+  margin-right:6px}
+footer .sep{color:var(--faint);margin:0 6px}
+
+@media (max-width:860px){
+  #main{grid-template-columns:1fr;grid-template-rows:auto auto auto}
+  #matrix-wrap{grid-column:1;grid-row:1}
+  #scatter-wrap{grid-column:1;grid-row:2;padding:0 24px 6px}
+  #info-wrap{grid-column:1;grid-row:3;padding:6px 24px 22px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="masthead">
+    <span class="eyebrow">Interactive figure <b>·</b> Supplementary materials</span>
+  </div>
+  <h1>Skill Diffusion Explorer</h1>
+  <p class="deck">
+    Directional diffusion of occupational skill requirements
+    <span class="sep">·</span> O*NET 2015&ndash;2024
+    <span class="sep">·</span> FE strategy selectable below
+    <span class="sep">·</span> Each cell: triads (source&nbsp;&rarr;&nbsp;target, skill) ranked by log-hazard of diffusion
+  </p>
+  <div class="status-axis">
+    <span class="axis-lab lo">T1&nbsp;&mdash;&nbsp;Target ranks below source</span>
+    <div class="axis-track" aria-hidden="true"></div>
+    <span class="axis-lab hi">T3&nbsp;&mdash;&nbsp;Target ranks above source</span>
+  </div>
+</header>
+
+<div id="controls">
+  <div class="ctrl-group">
+    <div class="ctrl-label">Flow</div>
+    <div class="ctrl-hint">Adoption: target gains a skill · Abandonment: target loses a skill</div>
+    <div class="btn-row pills">
+      <button class="seg active" data-ctrl="flow" data-val="adoption">Adoption</button>
+      <button class="seg"        data-ctrl="flow" data-val="abandonment">Abandonment</button>
+    </div>
+  </div>
+  <div class="ctrl-group">
+    <div class="ctrl-label">Fixed effects</div>
+    <div class="ctrl-hint">Source + Skill FE: identifies effect from target variation · Target + Skill FE: identifies effect from source variation</div>
+    <div class="btn-row pills">
+      <button class="seg active" data-ctrl="panel" data-val="A">Source + Skill FE</button>
+      <button class="seg"        data-ctrl="panel" data-val="B">Target + Skill FE</button>
+    </div>
+  </div>
+  <div class="ctrl-group">
+    <div class="ctrl-label">Skill profile distance</div>
+    <div class="ctrl-hint">Cosine distance between the skill-specialization profiles of source and target occupation (O*NET RCA&nbsp;&ge;&nbsp;1). Filters by decile of the distance distribution.</div>
+    <div class="btn-row pills">
+      <button class="seg active" data-ctrl="decile" data-val="D2D9">Full</button>
+      <button class="seg"        data-ctrl="decile" data-val="D4D6">Trimmed large</button>
+      <button class="seg"        data-ctrl="decile" data-val="D3D7">Trimmed extreme</button>
+    </div>
+  </div>
+  <div class="ctrl-group">
+    <div class="ctrl-label">Sampling</div>
+    <div class="ctrl-hint">Dyad-unique: one triad per occupation pair · Random: random draw</div>
+    <div class="btn-row pills">
+      <button class="seg active" data-ctrl="sampling" data-val="dyad_unique">Dyad-unique</button>
+      <button class="seg"        data-ctrl="sampling" data-val="random">Random</button>
+    </div>
+  </div>
+  <div class="ctrl-group">
+    <div class="ctrl-label">Skill type</div>
+    <div class="ctrl-hint">Toggle skill domains — colors match the manuscript figures</div>
+    <div class="btn-row arch">
+      <button class="arch-btn sc-sc active" data-arch="SC_Scaffolding">Specialized socio-cognitive</button>
+      <button class="arch-btn sc-sp active" data-arch="SC_Specialized">General socio-cognitive</button>
+      <button class="arch-btn phy   active" data-arch="Physical_Terminal">Physical-sensory</button>
+    </div>
+  </div>
+  <div class="ctrl-group">
+    <div class="ctrl-label">Triads / cell &nbsp;<span id="n-val">20</span></div>
+    <input type="range" id="n-slider" min="5" max="50" step="5" value="20"
+           aria-label="Maximum triads per cell">
+  </div>
+</div>
+
+<div id="main">
+  <div id="matrix-wrap">
+    <table class="matrix">
+      <thead id="matrix-thead"></thead>
+      <tbody id="matrix-tbody"></tbody>
+    </table>
+  </div>
+
+  <div id="scatter-wrap">
+    <div class="panel-card">
+      <h2>Skill scatter</h2>
+      <p class="sub">Each point = one skill. X = mean status gap. Y = mean log-hazard.
+         Size &prop; frequency. Click a matrix cell to highlight skills in that cell.</p>
+      <svg id="scatter-svg" height="280" role="img"
+           aria-label="Scatter of skills by mean status gap and mean log-hazard"></svg>
+    </div>
+  </div>
+
+  <div id="info-wrap">
+    <div class="panel-card">
+      <h2>How to read</h2>
+      <div id="info-content">
+        <p><span class="key">Rows</span> = log-hazard tercile (High / Mid / Low).</p>
+        <p><span class="key">Columns</span> = status gap zone:<br>
+          <span class="key">T1</span> Target ranks <em>below</em> source (downward gap, G &lt; 0) &middot;
+          <span class="key">T2</span> Peer / lateral (G &asymp; 0) &middot;
+          <span class="key">T3</span> Target ranks <em>above</em> source (upward gap, G &gt; 0)</p>
+        <p><span class="key">lp</span> = log-hazard of diffusion. <span style="color:var(--lp-pos);font-weight:700">Higher lp</span> = higher probability that the skill is adopted (or abandoned). <span style="color:var(--lp-neg);font-weight:700">Lower lp</span> = lower probability — the status gap acts as a barrier.</p>
+        <p><span class="chip pos">Green</span> = facilitated &nbsp;
+           <span class="chip neg">Red</span> = blocked</p>
+        <p>Source&nbsp;&rarr;&nbsp;Target = most frequent real observed occupational pair
+           for that skill in the cell (O*NET 2015&ndash;2024)</p>
+        <p class="footnote">Fixed effects selectable above (Source + Skill FE or Target + Skill FE). Status gap = PC1(target &minus; source), composite of log wage, log education, and cognitive content. Skill profile distance = cosine distance between occupation skill-specialization profiles (O*NET RCA &ge; 1). <b>Full</b>: all dyads in deciles D2&ndash;D9 of the distance distribution. <b>Trimmed</b>: restricts to D4&ndash;D6 — pairs with moderate profile dissimilarity, excluding both very similar and very different occupation pairs.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tooltip"></div>
+
+<footer>
+  O*NET 2015&ndash;2024
+  <span class="sep">&middot;</span> Status index: PC1(wage, education, cognitive content)
+  <span class="sep">&middot;</span> Source + Skill FE for both flows
+  <span class="sep">&middot;</span> <span id="data-version" style="font-family:var(--mono);color:var(--faint)">data: —</span>
+</footer>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────
+const S = {
+  flow:    "adoption",
+  panel:   "A",
+  decile:  "D2D9",
+  sampling:"dyad_unique",
+  archs:   new Set(["SC_Scaffolding","SC_Specialized","Physical_Terminal"]),
+  n:       20,
+  cell:    null,
+  data:    null
+};
+
+// ── CONSTANTS ──────────────────────────────────────────────────────────────
+const ARCH = {
+  SC_Scaffolding:    { short:"SC-Sc", label:"Specialized socio-cognitive",
+                       bg:"var(--sc-sc-bg)", fg:"var(--sc-sc-fg)", dot:"#3B4992" },
+  SC_Specialized:    { short:"SC-Sp", label:"General socio-cognitive",
+                       bg:"var(--sc-sp-bg)", fg:"var(--sc-sp-fg)", dot:"#B07A00" },
+  Physical_Terminal: { short:"Phys",  label:"Physical-sensory",
+                       bg:"var(--phy-bg)",   fg:"var(--phy-fg)",   dot:"#BB0021" }
+};
+
+// ── SKILL DESCRIPTIONS (from O*NET Content Model Reference) ────────────────
+function getSkillDesc() { return S.data?.meta?.skill_descriptions || {}; }
+
+function getSkillTooltip(skillName) {
+  const desc = getSkillDesc()[skillName];
+  if (!desc) return `<strong>${skillName}</strong>`;
+  return `<strong style="font-size:10px">${skillName}</strong><br>`
+       + `<em style="color:#a0c4e0;font-size:9px;font-style:normal">${desc.type}</em><br>`
+       + `<span style="font-size:9px;line-height:1.45;color:#dde4ec">${desc.description}</span>`;
+}
+
+
+const ZONE = {
+  T1:{ title:"Source \u226b Target", sub:"Downward status gap",
+       glyph:"\u2193", bg:"var(--t1-bg)", edge:"var(--t1-edge)",
+       adopt:"<b style='color:var(--phy-fg)'>Physical \u2193 facilitated</b> &nbsp;|&nbsp; <b style='color:var(--sc-sc-fg)'>Cognitive \u2193 blocked</b>",
+       aband:"<b style='color:var(--phy-fg)'>Physical: shedding facilitated</b> &nbsp;|&nbsp; <b style='color:var(--sc-sc-fg)'>Cognitive: shedding blocked</b>" },
+  T2:{ title:"Source \u2248 Target", sub:"Peer / lateral",
+       glyph:"\u2194", bg:"var(--t2-bg)", edge:"var(--t2-edge)",
+       adopt:"<span style='color:var(--faint)'>All directions \u2248 0</span>",
+       aband:"<span style='color:var(--faint)'>All directions \u2248 0</span>" },
+  T3:{ title:"Source \u226a Target", sub:"Upward status gap",
+       glyph:"\u2191", bg:"var(--t3-bg)", edge:"var(--t3-edge)",
+       adopt:"<b style='color:var(--sc-sc-fg)'>Cognitive \u2191 facilitated</b> &nbsp;|&nbsp; <b style='color:var(--phy-fg)'>Physical \u2191 blocked</b>",
+       aband:"<b style='color:var(--sc-sc-fg)'>Cognitive: shedding facilitated</b> &nbsp;|&nbsp; <b style='color:var(--phy-fg)'>Physical: shedding blocked</b>" }
+};
+
+const LP_ROW = {
+  High:{ label:"\u2191 High lp", bg:"var(--lp-pos-bg)", fg:"var(--lp-pos)" },
+  Mid: { label:"Mid lp",        bg:"#FAFAF8",           fg:"#5C6168" },
+  Low: { label:"\u2193 Low lp", bg:"var(--lp-neg-bg)",  fg:"var(--lp-neg)" }
+};
+
+const EXPECTED = {
+  adoption:{
+    "High__T1":"Physical \u2193 facilitated (low upward friction)",
+    "Mid__T1": "Mixed",
+    "Low__T1": "Cognitive \u2193 blocked (high downward friction)",
+    "High__T2":"Lateral / peer diffusion (\u2248 0)",
+    "Mid__T2": "Lateral / peer diffusion (\u2248 0)",
+    "Low__T2": "Lateral / peer diffusion (\u2248 0)",
+    "High__T3":"Cognitive \u2191 facilitated | Physical \u2191 blocked",
+    "Mid__T3": "Mixed",
+    "Low__T3": "Physical \u2191 blocked (structural resistance)"
+  },
+  abandonment:{
+    "High__T1":"Physical: shedding facilitated (high-status sources shed physical)",
+    "Mid__T1": "Mixed",
+    "Low__T1": "Cognitive: shedding blocked (high-status sources retain cognitive)",
+    "High__T2":"Lateral / peer shedding (\u2248 0)",
+    "Mid__T2": "Lateral / peer shedding (\u2248 0)",
+    "Low__T2": "Lateral / peer shedding (\u2248 0)",
+    "High__T3":"Cognitive: shedding facilitated (low-status sources shed cognitive)",
+    "Mid__T3": "Mixed",
+    "Low__T3": "Physical: shedding blocked (low-status sources retain physical)"
+  }
+};
+
+// ── LOAD ───────────────────────────────────────────────────────────────────
+async function loadData() {
+  // Preferred: embedded data file (works with file:// double-click)
+  if (window.TRIADS_DATA) { S.data = window.TRIADS_DATA; init(); return; }
+  try {
+    const resp = await fetch("triads_explorer.json");
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    S.data = await resp.json();
+    init();
+  } catch(e) {
+    document.getElementById("matrix-wrap").innerHTML =
+      `<div style="padding:40px;color:var(--lp-neg);font-size:13px;background:var(--paper);
+                   border:1px solid var(--hairline);border-radius:10px">
+        <strong>Could not load the data</strong><br><br>
+        <b>Option A (recommended, then just double-click this file):</b> in the same folder, run once:<br>
+        <code>printf 'window.TRIADS_DATA = ' > triads_data.js && cat triads_explorer.json >> triads_data.js && printf ';' >> triads_data.js</code><br><br>
+        <b>Option B:</b> serve via <code>python3 -m http.server 8080</code> and open
+        <code>http://localhost:8080/triads_explorer.html</code>.<br><br>
+        Error: ${e.message}</div>`;
+  }
+}
+
+function init() {
+  const m = S.data?.meta || {};
+  document.getElementById("data-version").textContent =
+    `data: ${m.generated || "unknown"} · ${(m.panel_labels?.[S.panel]) || (S.panel === "A" ? "Source + Skill FE" : "Target + Skill FE")}`;
+  bindControls(); render();
+}
+function render() { renderMatrix(); renderScatter(); }
+
+// ── MATRIX ─────────────────────────────────────────────────────────────────
+function renderMatrix() {
+  const fd = S.data?.[S.flow]?.[S.panel]?.[S.decile];
+  const cells = fd?.[`cells_${S.sampling}`] || {};
+  const dr    = fd?.dist_range || {};
+  const patKey = S.flow === "adoption" ? "adopt" : "aband";
+
+  // thead
+  document.getElementById("matrix-thead").innerHTML = `
+    <tr>
+      <th class="corner">lp tercile</th>
+      ${["T1","T2","T3"].map(z=>`
+        <th class="zone-hdr" style="background:${ZONE[z].bg};--edge:${ZONE[z].edge}">
+          <div><span class="zone-glyph" style="color:${ZONE[z].edge}">${ZONE[z].glyph}</span><span class="zone-title">${ZONE[z].title}</span></div>
+          <div class="zone-sub">${ZONE[z].sub}</div>
+          <div class="zone-pat">${ZONE[z][patKey]}</div>
+        </th>`).join("")}
+    </tr>
+    <tr>
+      <td colspan="4" class="meta-row">
+        skill profile distance &isin; [${dr.min??'?'}, ${dr.max??'?'}]
+        &middot; <b>${(fd?.n_triads||0).toLocaleString()}</b> directed triads
+        &middot; sampling: <b>${S.sampling.replace("_"," ")}</b>
+        &middot; max per cell: <b>${S.n}</b>
+      </td>
+    </tr>`;
+
+  // tbody
+  document.getElementById("matrix-tbody").innerHTML =
+    ["High","Mid","Low"].map(lp => {
+      const rc = LP_ROW[lp];
+      const cols = ["T1","T2","T3"].map(zone => {
+        const key    = `${lp}__${zone}`;
+        const all    = (cells[key]||[]).filter(t=>S.archs.has(t.archetype));
+        const shown  = all.slice(0, S.n);
+        const isSelected = S.cell === key;
+
+        // arch counts
+        const cnt = {};
+        shown.forEach(t=>{ cnt[t.archetype]=(cnt[t.archetype]||0)+1; });
+        const meanLp  = shown.length ? shown.reduce((s,t)=>s+t.lp,0)/shown.length : null;
+        const meanCls = meanLp===null ? "none" : (meanLp>=0 ? "pos" : "neg");
+        const exp     = (EXPECTED[S.flow]||{})[key]||"";
+
+        const legend = Object.entries(cnt).sort((a,b)=>b[1]-a[1])
+          .map(([a,n])=>{
+            const ac=ARCH[a]||{};
+            return `<span class="arch-count" style="background:${ac.bg};color:${ac.fg}">${ac.short}&thinsp;${n}</span>`;
+          }).join(" ");
+
+        // triad rows — three columns
+        const rows = shown.map(t => {
+          const ac  = ARCH[t.archetype]||{};
+          const lpc = t.lp>=0?"var(--lp-pos)":"var(--lp-neg)";
+          const src = t.source || "—";
+          const tgt = t.target || "—";
+          return `
+            <div class="triad-row" data-arch="${t.archetype}">
+              <div class="triad-skill" 
+                   onmouseenter="showSkillTip(event,'${t.skill}')" 
+                   onmouseleave="hideTip()"
+                   style="cursor:default">
+                <span class="arch-badge" style="background:${ac.bg};color:${ac.fg}">${ac.short}</span>${t.skill}
+              </div>
+              <div class="triad-lp" style="color:${lpc}">${t.lp>=0?"+":""}${t.lp.toFixed(3)}</div>
+              <div class="triad-pair">${src}<span class="arrow">&rarr;</span>${tgt}</div>
+            </div>`;
+        }).join("");
+
+        const header = shown.length > 0 ? `
+          <div class="triad-table">
+            <div class="th-skill">Skill</div>
+            <div class="th-lp">lp</div>
+            <div class="th-pair">Source &rarr; Target (modal pair)</div>
+            ${rows}
+          </div>` :
+          `<div style="color:var(--faint);font-size:9.5px;padding:4px">No data for current filters</div>`;
+
+        return `
+          <td class="cell${isSelected?" selected":""}"
+              data-cell="${key}" onclick="selectCell('${key}')">
+            <div class="cell-hdr">
+              <div class="arch-legend">${legend||"<span style='color:var(--faint);font-size:8.5px'>—</span>"}</div>
+              <div class="cell-mean ${meanCls}">
+                ${meanLp!==null?`mean lp ${meanLp>=0?"+":""}${meanLp.toFixed(3)}`:"—"}
+              </div>
+            </div>
+            <div class="cell-expected">${exp}</div>
+            ${header}
+          </td>`;
+      }).join("");
+
+      return `<tr>
+        <td class="lp-hdr" style="background:${rc.bg};color:${rc.fg}">${rc.label}</td>
+        ${cols}
+      </tr>`;
+    }).join("");
+}
+
+// ── SCATTER ────────────────────────────────────────────────────────────────
+function renderScatter() {
+  const fd   = S.data?.[S.flow]?.[S.panel]?.[S.decile];
+  const raw  = (fd?.scatter||[]).filter(d=>S.archs.has(d.archetype));
+
+  const svgEl = document.getElementById("scatter-svg");
+  const W  = svgEl.clientWidth || 264;
+  const H  = 280;
+  const M  = {top:18, right:12, bottom:36, left:42};
+  const iW = W - M.left - M.right;
+  const iH = H - M.top  - M.bottom;
+
+  const svg = d3.select("#scatter-svg").attr("height",H)
+    .attr("viewBox",`0 0 ${W} ${H}`);
+  svg.selectAll("*").remove();
+
+  if (!raw.length) {
+    svg.append("text").attr("x",W/2).attr("y",H/2)
+       .attr("text-anchor","middle").attr("fill","#B9BDC3").attr("font-size",10)
+       .text("No data");
+    return;
+  }
+
+  const pts = raw.filter(d => isFinite(d.gap) && isFinite(d.lp));
+  if (!pts.length) {
+    svg.append("text").attr("x",W/2).attr("y",H/2)
+       .attr("text-anchor","middle").attr("fill","#B9BDC3").attr("font-size",10)
+       .text("gap data not available");
+    return;
+  }
+
+  const xExt = d3.extent(pts, d=>d.gap);
+  const yExt = d3.extent(pts, d=>d.lp);
+  const xDom = [Math.min(xExt[0],0)*1.05, Math.max(xExt[1],0)*1.05];
+  const yDom = [Math.min(yExt[0],0)*1.05, Math.max(yExt[1],0)*1.05];
+  const nExt = d3.extent(pts, d=>d.n);
+
+  const xSc = d3.scaleLinear().domain(xDom).range([0,iW]);
+  const ySc = d3.scaleLinear().domain(yDom).range([iH,0]);
+  const rSc = d3.scaleSqrt().domain([nExt[0]||1, nExt[1]||2]).range([2.2,7.5]);
+
+  const g = svg.append("g").attr("transform",`translate(${M.left},${M.top})`);
+
+  // Quadrant shading: facilitated half (lp > 0) gets a whisper of green
+  g.append("rect").attr("x",0).attr("y",0).attr("width",iW).attr("height",ySc(0))
+   .attr("fill","#008B45").attr("opacity",0.035);
+  g.append("rect").attr("x",0).attr("y",ySc(0)).attr("width",iW).attr("height",iH-ySc(0))
+   .attr("fill","#BB0021").attr("opacity",0.03);
+
+  // Zero lines
+  g.append("line").attr("x1",xSc(0)).attr("x2",xSc(0)).attr("y1",0).attr("y2",iH)
+   .attr("stroke","#D6D9D5").attr("stroke-dasharray","3,3").attr("stroke-width",.9);
+  g.append("line").attr("x1",0).attr("x2",iW).attr("y1",ySc(0)).attr("y2",ySc(0))
+   .attr("stroke","#D6D9D5").attr("stroke-dasharray","3,3").attr("stroke-width",.9);
+
+  // Axes
+  const axStyle = ax=>{ ax.select(".domain").attr("stroke","#C9CCC8");
+              ax.selectAll(".tick line").attr("stroke","#C9CCC8");
+              ax.selectAll(".tick text").attr("fill","#8E939B").attr("font-size",8)
+                .attr("font-family","ui-monospace,Consolas,monospace"); };
+  g.append("g").attr("transform",`translate(0,${iH})`)
+   .call(d3.axisBottom(xSc).ticks(4).tickSize(3)).call(axStyle);
+  g.append("g")
+   .call(d3.axisLeft(ySc).ticks(4).tickSize(3)).call(axStyle);
+
+  // Labels
+  g.append("text").attr("x",iW/2).attr("y",iH+27)
+   .attr("text-anchor","middle").attr("fill","#8E939B").attr("font-size",8.5)
+   .text("Mean status gap (target \u2212 source, PC1)");
+  g.append("text").attr("transform","rotate(-90)").attr("x",-iH/2).attr("y",-32)
+   .attr("text-anchor","middle").attr("fill","#8E939B").attr("font-size",8.5)
+   .text("Mean log-hazard (lp)");
+
+  // Highlighted skills
+  let hilite = null;
+  if (S.cell) {
+    const cellTriads = fd?.[`cells_${S.sampling}`]?.[S.cell] || [];
+    hilite = new Set(cellTriads.map(t=>t.skill));
+  }
+
+  const tip = document.getElementById("tooltip");
+
+  g.selectAll("circle").data(pts).join("circle")
+   .attr("cx", d=>xSc(d.gap))
+   .attr("cy", d=>ySc(d.lp))
+   .attr("r",  d=>rSc(d.n))
+   .attr("fill",    d=>ARCH[d.archetype]?.dot||"#888")
+   .attr("opacity", d=>hilite?( hilite.has(d.skill)?1:.08 ):0.62)
+   .attr("stroke",  d=>hilite?.has(d.skill)?"#15181D":"none")
+   .attr("stroke-width",1)
+   .style("cursor","pointer")
+   .on("mouseover",(ev,d)=>{
+     const ac=ARCH[d.archetype]||{};
+     tip.style.display="block";
+     tip.innerHTML=`<strong>${d.skill}</strong><br>
+       <span style="color:#AEB3BA;font-size:8.5px">${ac.label||d.archetype}</span><br>
+       <span class="tt-num">lp = ${d.lp>=0?"+":""}${d.lp.toFixed(3)} &nbsp; gap = ${d.gap>=0?"+":""}${d.gap.toFixed(3)}</span><br>
+       <span class="tt-num">n = ${d.n.toLocaleString()} triads</span>`;
+   })
+   .on("mousemove",ev=>{ tip.style.left=(ev.clientX+12)+"px"; tip.style.top=(ev.clientY-28)+"px"; })
+   .on("mouseout",()=>{ tip.style.display="none"; });
+
+  // Legend
+  const legData = Object.entries(ARCH).filter(([k])=>S.archs.has(k));
+  const leg = svg.append("g").attr("transform",`translate(${M.left+4},${M.top+3})`);
+  legData.forEach(([k,v],i)=>{
+    const row=leg.append("g").attr("transform",`translate(0,${i*12.5})`);
+    row.append("circle").attr("r",3.5).attr("cx",3.5).attr("cy",0)
+       .attr("fill",v.dot).attr("opacity",.85);
+    row.append("text").attr("x",11).attr("y",3.5)
+       .attr("font-size",7.5).attr("fill","#6A6F76").text(v.short);
+  });
+}
+
+// ── CELL SELECT ────────────────────────────────────────────────────────────
+function selectCell(key) {
+  S.cell = S.cell===key ? null : key;
+  render();
+}
+
+// ── CONTROLS ───────────────────────────────────────────────────────────────
+function bindControls() {
+  document.querySelectorAll("button.seg").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const ctrl=btn.dataset.ctrl, val=btn.dataset.val;
+      document.querySelectorAll(`button.seg[data-ctrl="${ctrl}"]`)
+              .forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      S[ctrl]=val; S.cell=null; render();
+    });
+  });
+
+  document.querySelectorAll("button.arch-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const arch=btn.dataset.arch;
+      if (S.archs.has(arch)){
+        if (S.archs.size===1) return;
+        S.archs.delete(arch); btn.classList.remove("active");
+      } else {
+        S.archs.add(arch); btn.classList.add("active");
+      }
+      render();
+    });
+  });
+
+  const slider=document.getElementById("n-slider");
+  const nv=document.getElementById("n-val");
+  slider.addEventListener("input",()=>{
+    S.n=+slider.value; nv.textContent=slider.value; renderMatrix();
+  });
+
+  window.addEventListener("resize",()=>renderScatter());
+}
+
+loadData();
+function showSkillTip(e, skillName) {
+  const tip = document.getElementById("tooltip");
+  const html_content = getSkillTooltip(skillName);
+  tip.innerHTML = html_content;
+  tip.style.display = "block";
+  positionTip(e, tip);
+}
+
+function hideTip() {
+  const tip = document.getElementById("tooltip");
+  tip.style.display = "none";
+}
+
+function positionTip(e, tip) {
+  const pad = 12;
+  let x = e.clientX + pad;
+  let y = e.clientY + pad;
+  tip.style.left = x + "px";
+  tip.style.top  = y + "px";
+  // keep inside viewport
+  const rect = tip.getBoundingClientRect();
+  if (rect.right  > window.innerWidth)  tip.style.left = (e.clientX - rect.width  - pad) + "px";
+  if (rect.bottom > window.innerHeight) tip.style.top  = (e.clientY - rect.height - pad) + "px";
+}
+
+</script>
+</body>
+</html>

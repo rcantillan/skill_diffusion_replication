@@ -1,0 +1,25 @@
+panel,var,archetype,coef,se,p,sig
+Panel A,kappa,SC_Scaffolding,-0.0618,0.0241,0.0102,*
+Panel A,kappa,SC_Specialized,-0.0925,0.0327,0.0047,**
+Panel A,kappa,Physical_Terminal,0.0194,0.0373,0.603,ns
+Panel A,b_up,SC_Scaffolding,0.1867,0.0336,0,***
+Panel A,b_up,SC_Specialized,0.2437,0.0419,0,***
+Panel A,b_up,Physical_Terminal,-0.322,0.0479,0,***
+Panel A,b_dn,SC_Scaffolding,0.1177,0.0454,0.0095,**
+Panel A,b_dn,SC_Specialized,0.2181,0.0507,0,***
+Panel A,b_dn,Physical_Terminal,-0.076,0.0415,0.0672,~
+Panel A,delta,SC_Scaffolding,-0.9601,0.1585,0,***
+Panel A,delta,SC_Specialized,-1.8624,0.245,0,***
+Panel A,delta,Physical_Terminal,-1.1187,0.2267,0,***
+Panel B,kappa,SC_Scaffolding,-0.0246,0.0208,0.2365,ns
+Panel B,kappa,SC_Specialized,-0.0611,0.029,0.0352,*
+Panel B,kappa,Physical_Terminal,0.0267,0.0403,0.5078,ns
+Panel B,b_up,SC_Scaffolding,0.1472,0.0298,0,***
+Panel B,b_up,SC_Specialized,0.1844,0.037,0,***
+Panel B,b_up,Physical_Terminal,-0.3096,0.0415,0,***
+Panel B,b_dn,SC_Scaffolding,-0.001,0.0221,0.9653,ns
+Panel B,b_dn,SC_Specialized,0.109,0.0317,6e-04,***
+Panel B,b_dn,Physical_Terminal,-0.1573,0.0325,0,***
+Panel B,delta,SC_Scaffolding,-1.0974,0.1551,0,***
+Panel B,delta,SC_Specialized,-1.9153,0.2471,0,***
+Panel B,delta,Physical_Terminal,-1.3403,0.2281,0,***

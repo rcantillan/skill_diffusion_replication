@@ -1,0 +1,97 @@
+flow,panel,coef,model,estimate,std_error,sig
+adoption,Panel A,b_up_SC_Scaffolding,Baseline,0.191453998860789,0.0346075355264016,***
+adoption,Panel A,b_dn_SC_Scaffolding,Baseline,0.12388691637427,0.0472309280261379,**
+adoption,Panel A,b_up_SC_Specialized,Baseline,0.244763032692488,0.0436181562068366,***
+adoption,Panel A,b_dn_SC_Specialized,Baseline,0.221584866023117,0.053679581401602,***
+adoption,Panel A,b_up_Physical_Terminal,Baseline,-0.331277102606631,0.049675081169762,***
+adoption,Panel A,b_dn_Physical_Terminal,Baseline,-0.0794115893339246,0.0434455707684578,~
+adoption,Panel B,b_up_SC_Scaffolding,Baseline,0.151319872568013,0.0303173899070581,***
+adoption,Panel B,b_dn_SC_Scaffolding,Baseline,0.00244654517224977,0.0232938363971511,ns
+adoption,Panel B,b_up_SC_Specialized,Baseline,0.1858207721,0.0383038399032686,***
+adoption,Panel B,b_dn_SC_Specialized,Baseline,0.107852594044796,0.0336536143221309,**
+adoption,Panel B,b_up_Physical_Terminal,Baseline,-0.320208714579135,0.0428824105968056,***
+adoption,Panel B,b_dn_Physical_Terminal,Baseline,-0.159678070524599,0.0342013324506594,***
+abandonment,Panel A,b_up_SC_Scaffolding,Baseline,-0.247939102946805,0.035419969952877,***
+abandonment,Panel A,b_dn_SC_Scaffolding,Baseline,-0.234870398282431,0.0310641598409194,***
+abandonment,Panel A,b_up_SC_Specialized,Baseline,-0.270148885262403,0.0449080236374305,***
+abandonment,Panel A,b_dn_SC_Specialized,Baseline,-0.280219600302719,0.0338495589121972,***
+abandonment,Panel A,b_up_Physical_Terminal,Baseline,0.0969211158051434,0.0462865522777701,*
+abandonment,Panel A,b_dn_Physical_Terminal,Baseline,-0.0220866239567137,0.0402482725893653,ns
+abandonment,Panel B,b_up_SC_Scaffolding,Baseline,-0.0877245722065884,0.025797930633274,***
+abandonment,Panel B,b_dn_SC_Scaffolding,Baseline,-0.0482348356139456,0.017818313625142,**
+abandonment,Panel B,b_up_SC_Specialized,Baseline,-0.0987299202923368,0.0348830497233036,**
+abandonment,Panel B,b_dn_SC_Specialized,Baseline,-0.0935144715115325,0.023973732987676,***
+abandonment,Panel B,b_up_Physical_Terminal,Baseline,0.208874582325344,0.0432920037128707,***
+abandonment,Panel B,b_dn_Physical_Terminal,Baseline,0.163893659463901,0.0349717430269927,***
+adoption,Panel A,b_up_SC_Scaffolding,AIOE control,0.0231112880616837,0.0413980053617487,ns
+adoption,Panel A,b_dn_SC_Scaffolding,AIOE control,-0.01850965411669,0.0511397170378417,ns
+adoption,Panel A,b_up_SC_Specialized,AIOE control,-0.0280747007174252,0.0463835211171177,ns
+adoption,Panel A,b_dn_SC_Specialized,AIOE control,0.0438448295233673,0.0594452377013998,ns
+adoption,Panel A,b_up_Physical_Terminal,AIOE control,-0.194692849161184,0.0495198076422744,***
+adoption,Panel A,b_dn_Physical_Terminal,AIOE control,-0.0696126868097692,0.0566646128089494,ns
+adoption,Panel A,b_up_SC_Scaffolding,GPT control,0.133254689238278,0.0381810764027516,***
+adoption,Panel A,b_dn_SC_Scaffolding,GPT control,0.0592470695209716,0.0477879959079735,ns
+adoption,Panel A,b_up_SC_Specialized,GPT control,0.107920510734324,0.0478668447253681,*
+adoption,Panel A,b_dn_SC_Specialized,GPT control,0.115854292710905,0.0547896237645234,*
+adoption,Panel A,b_up_Physical_Terminal,GPT control,-0.302461813340868,0.0462672190809157,***
+adoption,Panel A,b_dn_Physical_Terminal,GPT control,-0.0991808128822844,0.0480586221668396,*
+adoption,Panel A,b_up_SC_Scaffolding,Both controls,0.00357913096761449,0.0427235113802893,ns
+adoption,Panel A,b_dn_SC_Scaffolding,Both controls,-0.0289765896017471,0.0531016826697832,ns
+adoption,Panel A,b_up_SC_Specialized,Both controls,-0.024907788418692,0.0505826258489076,ns
+adoption,Panel A,b_dn_SC_Specialized,Both controls,0.0351229546006975,0.0618705139467416,ns
+adoption,Panel A,b_up_Physical_Terminal,Both controls,-0.20189308165502,0.0485274922961929,***
+adoption,Panel A,b_dn_Physical_Terminal,Both controls,-0.0886235526848091,0.058423691763244,ns
+adoption,Panel B,b_up_SC_Scaffolding,AIOE control,0.0689912841395137,0.0214626085366808,**
+adoption,Panel B,b_dn_SC_Scaffolding,AIOE control,-0.0186248645808916,0.0248570685262798,ns
+adoption,Panel B,b_up_SC_Specialized,AIOE control,0.0107703459570996,0.0299920925988658,ns
+adoption,Panel B,b_dn_SC_Specialized,AIOE control,0.0424485974344569,0.0332500633755572,ns
+adoption,Panel B,b_up_Physical_Terminal,AIOE control,-0.148511102121623,0.0379016028795538,***
+adoption,Panel B,b_dn_Physical_Terminal,AIOE control,-0.0406164785445625,0.03824932088756,ns
+adoption,Panel B,b_up_SC_Scaffolding,GPT control,0.115813853669568,0.0280815860946086,***
+adoption,Panel B,b_dn_SC_Scaffolding,GPT control,-0.0104587186471831,0.0215969287150649,ns
+adoption,Panel B,b_up_SC_Specialized,GPT control,0.0916862632803301,0.0370764431767395,*
+adoption,Panel B,b_dn_SC_Specialized,GPT control,0.0443444974299775,0.0298030672751586,ns
+adoption,Panel B,b_up_Physical_Terminal,GPT control,-0.306631734226896,0.0417696178470432,***
+adoption,Panel B,b_dn_Physical_Terminal,GPT control,-0.134918339512824,0.0374106354172692,***
+adoption,Panel B,b_up_SC_Scaffolding,Both controls,0.0533226119113974,0.0221625776254899,*
+adoption,Panel B,b_dn_SC_Scaffolding,Both controls,-0.0203105319407825,0.02553074717645,ns
+adoption,Panel B,b_up_SC_Specialized,Both controls,0.025534380233627,0.0312063943242002,ns
+adoption,Panel B,b_dn_SC_Specialized,Both controls,0.0412425008439509,0.0347380466160709,ns
+adoption,Panel B,b_up_Physical_Terminal,Both controls,-0.151259772956137,0.0379157217890188,***
+adoption,Panel B,b_dn_Physical_Terminal,Both controls,-0.0487907630413764,0.0389964756007467,ns
+abandonment,Panel A,b_up_SC_Scaffolding,AIOE control,-0.173742256260727,0.0457086843263209,***
+abandonment,Panel A,b_dn_SC_Scaffolding,AIOE control,-0.150959079259106,0.0423177905926032,***
+abandonment,Panel A,b_up_SC_Specialized,AIOE control,-0.104794933488959,0.0501081132354141,*
+abandonment,Panel A,b_dn_SC_Specialized,AIOE control,-0.131735444813663,0.046642431761688,**
+abandonment,Panel A,b_up_Physical_Terminal,AIOE control,-0.0688321496462978,0.0518150771698507,ns
+abandonment,Panel A,b_dn_Physical_Terminal,AIOE control,-0.105585614416809,0.0425815610040171,*
+abandonment,Panel A,b_up_SC_Scaffolding,GPT control,-0.286076560940379,0.0395168962505129,***
+abandonment,Panel A,b_dn_SC_Scaffolding,GPT control,-0.222588850474542,0.0362125512212389,***
+abandonment,Panel A,b_up_SC_Specialized,GPT control,-0.242489928142969,0.048336109937198,***
+abandonment,Panel A,b_dn_SC_Specialized,GPT control,-0.217929039374363,0.0391766403273933,***
+abandonment,Panel A,b_up_Physical_Terminal,GPT control,0.0255419580205859,0.0529549515004768,ns
+abandonment,Panel A,b_dn_Physical_Terminal,GPT control,-0.108543751917409,0.036808327000641,**
+abandonment,Panel A,b_up_SC_Scaffolding,Both controls,-0.213198991557549,0.0454092527535392,***
+abandonment,Panel A,b_dn_SC_Scaffolding,Both controls,-0.178360526673881,0.0428797125256977,***
+abandonment,Panel A,b_up_SC_Specialized,Both controls,-0.131700818375896,0.0512508751576662,*
+abandonment,Panel A,b_dn_SC_Specialized,Both controls,-0.153595061344429,0.0471542229432652,**
+abandonment,Panel A,b_up_Physical_Terminal,Both controls,-0.0633093323594233,0.0535125648060042,ns
+abandonment,Panel A,b_dn_Physical_Terminal,Both controls,-0.128591380828973,0.0429684373742193,**
+abandonment,Panel B,b_up_SC_Scaffolding,AIOE control,-0.0317960822008392,0.025800608918933,ns
+abandonment,Panel B,b_dn_SC_Scaffolding,AIOE control,-0.0278409104839296,0.0191442724036418,ns
+abandonment,Panel B,b_up_SC_Specialized,AIOE control,0.0412108338381165,0.0312668587805728,ns
+abandonment,Panel B,b_dn_SC_Specialized,AIOE control,-0.0108178859939561,0.0246666308375893,ns
+abandonment,Panel B,b_up_Physical_Terminal,AIOE control,0.0524802551271071,0.0402676841535655,ns
+abandonment,Panel B,b_dn_Physical_Terminal,AIOE control,0.0100139836759559,0.0285240055560286,ns
+abandonment,Panel B,b_up_SC_Scaffolding,GPT control,-0.0706797901946897,0.0270293021889912,**
+abandonment,Panel B,b_dn_SC_Scaffolding,GPT control,-0.0285320757932321,0.0155124235566759,~
+abandonment,Panel B,b_up_SC_Specialized,GPT control,-0.0283109612252808,0.0354146867757412,ns
+abandonment,Panel B,b_dn_SC_Specialized,GPT control,-0.0326235133324117,0.0207607062111328,ns
+abandonment,Panel B,b_up_Physical_Terminal,GPT control,0.199265477723591,0.0446206120185656,***
+abandonment,Panel B,b_dn_Physical_Terminal,GPT control,0.0928949226138884,0.0271634516257697,***
+abandonment,Panel B,b_up_SC_Scaffolding,Both controls,-0.0372591824282162,0.0265273259926537,ns
+abandonment,Panel B,b_dn_SC_Scaffolding,Both controls,-0.027701266805371,0.0199636640545346,ns
+abandonment,Panel B,b_up_SC_Specialized,Both controls,0.0430275705957321,0.0326951828567648,ns
+abandonment,Panel B,b_dn_SC_Specialized,Both controls,-0.0101961039240205,0.0260208587060395,ns
+abandonment,Panel B,b_up_Physical_Terminal,Both controls,0.0749136651235866,0.0411915800624565,~
+abandonment,Panel B,b_dn_Physical_Terminal,Both controls,0.0183582574271308,0.0278639702752564,ns

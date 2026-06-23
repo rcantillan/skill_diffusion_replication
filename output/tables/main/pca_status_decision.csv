@@ -1,0 +1,2 @@
+approach,variables,center_scale,n_occupations,pc1_pct_var,pc2_pct_var,all_pos_loadings,needs_flip,gap_up,gap_down,gap_peer
+occupation_level_pca,"log_wage, log_edu, cog",TRUE / TRUE,741,75,19,FALSE,TRUE,2.6228,-2.6609,-9e-04

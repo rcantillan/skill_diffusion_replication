@@ -1,0 +1,9 @@
+flow,panel,coef,estimate,std_error,sig
+adoption,Aggregate,b_up_Cog,-1.35884506998724,0.372254744695071,***
+adoption,Aggregate,b_dn_Cog,0.270473855397182,0.320811370887535,ns
+adoption,Aggregate,b_up_Phy,-1.29862427942214,0.31893436114182,***
+adoption,Aggregate,b_dn_Phy,,,""
+abandonment,Aggregate,b_up_Cog,-98.8016886111848,40.7388827381609,*
+abandonment,Aggregate,b_dn_Cog,-100.268592287349,40.7349102798708,*
+abandonment,Aggregate,b_up_Phy,-99.7189016995439,40.7527624345804,*
+abandonment,Aggregate,b_dn_Phy,-101.410058180076,40.7623820975662,*

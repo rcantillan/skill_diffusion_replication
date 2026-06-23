@@ -1,0 +1,161 @@
+skill_name,theta_cluster,domain,match
+Active Learning,Cognitive,Cognitive,TRUE
+Active Listening,Cognitive,Cognitive,TRUE
+Administration and Management,Cognitive,Cognitive,TRUE
+Analyzing Data or Information,Cognitive,Cognitive,TRUE
+Arm-Hand Steadiness,Physical,Physical,TRUE
+Assisting and Caring for Others,Cognitive,Cognitive,TRUE
+Auditory Attention,Physical,Physical,TRUE
+Biology,Cognitive,Cognitive,TRUE
+Building and Construction,Physical,Physical,TRUE
+Category Flexibility,Cognitive,Cognitive,TRUE
+Chemistry,Physical,Physical,TRUE
+Clerical,Cognitive,Cognitive,TRUE
+Coaching and Developing Others,Cognitive,Cognitive,TRUE
+Communicating with Persons Outside Organization,Cognitive,Cognitive,TRUE
+"Communicating with Supervisors, Peers, or Subordinates",Cognitive,Cognitive,TRUE
+Communications and Media,Cognitive,Cognitive,TRUE
+Complex Problem Solving,Cognitive,Cognitive,TRUE
+Computers and Electronics,Cognitive,Cognitive,TRUE
+Control Precision,Physical,Physical,TRUE
+Controlling Machines and Processes,Physical,Physical,TRUE
+Coordinating the Work and Activities of Others,Cognitive,Cognitive,TRUE
+Coordination,Cognitive,Cognitive,TRUE
+Critical Thinking,Cognitive,Cognitive,TRUE
+Customer and Personal Service,Cognitive,Cognitive,TRUE
+Deductive Reasoning,Cognitive,Cognitive,TRUE
+Depth Perception,Physical,Physical,TRUE
+Design,Physical,Physical,TRUE
+Developing Objectives and Strategies,Cognitive,Cognitive,TRUE
+Developing and Building Teams,Cognitive,Cognitive,TRUE
+Documenting/Recording Information,Cognitive,Cognitive,TRUE
+"Drafting, Laying Out, and Specifying Technical Devices, Parts, and Equipment",Physical,Physical,TRUE
+Dynamic Flexibility,Physical,Physical,TRUE
+Dynamic Strength,Physical,Physical,TRUE
+Economics and Accounting,Cognitive,Cognitive,TRUE
+Education and Training,Cognitive,Cognitive,TRUE
+Engineering and Technology,Physical,Physical,TRUE
+English Language,Cognitive,Cognitive,TRUE
+Equipment Maintenance,Physical,Physical,TRUE
+Equipment Selection,Physical,Physical,TRUE
+Establishing and Maintaining Interpersonal Relationships,Cognitive,Cognitive,TRUE
+"Estimating the Quantifiable Characteristics of Products, Events, or Information",Physical,Physical,TRUE
+Evaluating Information to Determine Compliance with Standards,Cognitive,Cognitive,TRUE
+Explosive Strength,Physical,Physical,TRUE
+Extent Flexibility,Physical,Physical,TRUE
+Far Vision,Physical,Physical,TRUE
+Fine Arts,Cognitive,Cognitive,TRUE
+Finger Dexterity,Physical,Physical,TRUE
+Flexibility of Closure,Physical,Physical,TRUE
+Fluency of Ideas,Cognitive,Cognitive,TRUE
+Food Production,Physical,Physical,TRUE
+Foreign Language,Cognitive,Cognitive,TRUE
+Geography,Cognitive,Cognitive,TRUE
+Getting Information,Cognitive,Cognitive,TRUE
+Glare Sensitivity,Physical,Physical,TRUE
+Gross Body Coordination,Physical,Physical,TRUE
+Gross Body Equilibrium,Physical,Physical,TRUE
+"Guiding, Directing, and Motivating Subordinates",Cognitive,Cognitive,TRUE
+Handling and Moving Objects,Physical,Physical,TRUE
+Hearing Sensitivity,Physical,Physical,TRUE
+History and Archeology,Cognitive,Cognitive,TRUE
+"Identifying Objects, Actions, and Events",Cognitive,Cognitive,TRUE
+Inductive Reasoning,Cognitive,Cognitive,TRUE
+Information Ordering,Cognitive,Cognitive,TRUE
+"Inspecting Equipment, Structures, or Material",Physical,Physical,TRUE
+Installation,Physical,Physical,TRUE
+Instructing,Cognitive,Cognitive,TRUE
+Interacting With Computers,Cognitive,Cognitive,TRUE
+Interpreting the Meaning of Information for Others,Cognitive,Cognitive,TRUE
+"Judging the Qualities of Things, Services, or People",Cognitive,Cognitive,TRUE
+Judgment and Decision Making,Cognitive,Cognitive,TRUE
+Law and Government,Cognitive,Cognitive,TRUE
+Learning Strategies,Cognitive,Cognitive,TRUE
+Making Decisions and Solving Problems,Cognitive,Cognitive,TRUE
+Management of Financial Resources,Cognitive,Cognitive,TRUE
+Management of Material Resources,Cognitive,Physical,FALSE
+Management of Personnel Resources,Cognitive,Cognitive,TRUE
+Manual Dexterity,Physical,Physical,TRUE
+Mathematical Reasoning,Cognitive,Cognitive,TRUE
+Mathematics,Cognitive,Cognitive,TRUE
+Mechanical,Physical,Physical,TRUE
+Medicine and Dentistry,Cognitive,Cognitive,TRUE
+Memorization,Cognitive,Cognitive,TRUE
+"Monitor Processes, Materials, or Surroundings",Physical,Physical,TRUE
+Monitoring,Cognitive,Cognitive,TRUE
+Monitoring and Controlling Resources,Cognitive,Cognitive,TRUE
+Multilimb Coordination,Physical,Physical,TRUE
+Near Vision,Cognitive,Cognitive,TRUE
+Negotiation,Cognitive,Cognitive,TRUE
+Night Vision,Physical,Physical,TRUE
+Number Facility,Cognitive,Cognitive,TRUE
+"Operating Vehicles, Mechanized Devices, or Equipment",Physical,Physical,TRUE
+Operation Monitoring,Physical,Physical,TRUE
+Operation and Control,Physical,Physical,TRUE
+Operations Analysis,Cognitive,Cognitive,TRUE
+Oral Comprehension,Cognitive,Cognitive,TRUE
+Oral Expression,Cognitive,Cognitive,TRUE
+"Organizing, Planning, and Prioritizing Work",Cognitive,Cognitive,TRUE
+Originality,Cognitive,Cognitive,TRUE
+Perceptual Speed,Physical,Physical,TRUE
+Performing Administrative Activities,Cognitive,Cognitive,TRUE
+Performing General Physical Activities,Physical,Physical,TRUE
+Performing for or Working Directly with the Public,Cognitive,Cognitive,TRUE
+Peripheral Vision,Physical,Physical,TRUE
+Personnel and Human Resources,Cognitive,Cognitive,TRUE
+Persuasion,Cognitive,Cognitive,TRUE
+Philosophy and Theology,Cognitive,Cognitive,TRUE
+Physics,Physical,Physical,TRUE
+Problem Sensitivity,Cognitive,Cognitive,TRUE
+Processing Information,Cognitive,Cognitive,TRUE
+Production and Processing,Physical,Physical,TRUE
+Programming,Cognitive,Cognitive,TRUE
+Provide Consultation and Advice to Others,Cognitive,Cognitive,TRUE
+Psychology,Cognitive,Cognitive,TRUE
+Public Safety and Security,Physical,Physical,TRUE
+Quality Control Analysis,Physical,Physical,TRUE
+Rate Control,Physical,Physical,TRUE
+Reaction Time,Physical,Physical,TRUE
+Reading Comprehension,Cognitive,Cognitive,TRUE
+Repairing,Physical,Physical,TRUE
+Repairing and Maintaining Electronic Equipment,Physical,Physical,TRUE
+Repairing and Maintaining Mechanical Equipment,Physical,Physical,TRUE
+Resolving Conflicts and Negotiating with Others,Cognitive,Cognitive,TRUE
+Response Orientation,Physical,Physical,TRUE
+Sales and Marketing,Cognitive,Cognitive,TRUE
+Scheduling Work and Activities,Cognitive,Cognitive,TRUE
+Science,Cognitive,Cognitive,TRUE
+Selective Attention,Physical,Physical,TRUE
+Selling or Influencing Others,Cognitive,Cognitive,TRUE
+Service Orientation,Cognitive,Cognitive,TRUE
+Social Perceptiveness,Cognitive,Cognitive,TRUE
+Sociology and Anthropology,Cognitive,Cognitive,TRUE
+Sound Localization,Physical,Physical,TRUE
+Spatial Orientation,Physical,Physical,TRUE
+Speaking,Cognitive,Cognitive,TRUE
+Speech Clarity,Cognitive,Cognitive,TRUE
+Speech Recognition,Cognitive,Cognitive,TRUE
+Speed of Closure,Cognitive,Cognitive,TRUE
+Speed of Limb Movement,Physical,Physical,TRUE
+Staffing Organizational Units,Cognitive,Cognitive,TRUE
+Stamina,Physical,Physical,TRUE
+Static Strength,Physical,Physical,TRUE
+Systems Analysis,Cognitive,Cognitive,TRUE
+Systems Evaluation,Cognitive,Cognitive,TRUE
+Technology Design,Physical,Physical,TRUE
+Telecommunications,Cognitive,Cognitive,TRUE
+Therapy and Counseling,Cognitive,Cognitive,TRUE
+Thinking Creatively,Cognitive,Cognitive,TRUE
+Time Management,Cognitive,Cognitive,TRUE
+Time Sharing,Cognitive,Cognitive,TRUE
+Training and Teaching Others,Cognitive,Cognitive,TRUE
+Transportation,Physical,Physical,TRUE
+Troubleshooting,Physical,Physical,TRUE
+Trunk Strength,Physical,Physical,TRUE
+Updating and Using Relevant Knowledge,Cognitive,Cognitive,TRUE
+Visual Color Discrimination,Physical,Physical,TRUE
+Visualization,Physical,Physical,TRUE
+Wrist-Finger Speed,Physical,Physical,TRUE
+Writing,Cognitive,Cognitive,TRUE
+Written Comprehension,Cognitive,Cognitive,TRUE
+Written Expression,Cognitive,Cognitive,TRUE
