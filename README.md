@@ -133,6 +133,27 @@ Rscript R/07_fig1_descriptive.R
 Rscript R/08_fig2_regression.R
 ```
 
+### Exporting assets to the Overleaf manuscript
+
+After the main and SI scripts have run, mirror the generated figures and
+tables into the Overleaf project folders (`../figures/` and `../tables/`,
+which `draft/draft.tex` includes via `\input{figures/...}` /
+`\input{tables/...}`):
+
+```bash
+Rscript R/10_export_manuscript_figures.R   # copies figure PDFs -> ../figures/
+Rscript R/11_make_manuscript_tables.R      # regenerates the 7 SM tables -> ../tables/
+```
+
+Override the destinations with the `MANUSCRIPT_FIGS` / `MANUSCRIPT_TABLES`
+environment variables if your layout differs. Caveats: `figures/illustration.png`
+(Fig. 1 schematic) is hand-made and not produced by the pipeline; the two
+`fig_SI_alt_status_{Adoption,Abandonment}.pdf` panels must exist in
+`output/figures/si/` (the current `SI_09` writes a single combined figure); and
+`R/11` regenerates `tab_SI_gradients.tex` and `tab_SI_occ_desc.tex` from current
+pipeline output, which may differ slightly from the committed manuscript
+snapshot — re-check the S2.3 prose after running.
+
 For computationally intensive steps, redirect output to `logs/`:
 
 ```bash
