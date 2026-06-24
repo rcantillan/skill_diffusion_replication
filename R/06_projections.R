@@ -54,15 +54,17 @@ out_tables  <- "output/tables/main"
 for (d in c(out_figs, out_tables))
   dir.create(d, recursive = TRUE, showWarnings = FALSE)
  
-for (f in c(adopt_rds, aband_rds, coefs_adopt, coefs_aband, scores_path))
-  stopifnot(file.exists(f))
+for (f in c(adopt_rds, aband_rds, coefs_adopt, coefs_aband, scores_path)) {
+  if (!file.exists(f)) stop(sprintf(
+    "Required file not found: %s\n  Run the pipeline first:\n  Rscript R/01b_risk_set_abandonment.R\n  Rscript R/02b_enrich_abandonment.R\n  Rscript R/03c_nestedness_merge_ab.R", f))
+}
 message("[OK] All inputs verified")
  
-MAIN_ARCHETYPES <- c("SC_Scaffolding", "SC_Specialized", "Physical_Terminal")
+MAIN_ARCHETYPES <- c("SC_General", "SC_Specialized", "Physical_Terminal")
 ARCH_LABELS <- c(
-  SC_Scaffolding    = "Specialized socio-cognitive",
-  SC_Specialized    = "General socio-cognitive",
-  Physical_Terminal = "sensory-physical"
+  SC_General    = "General socio-cognitive",
+  SC_Specialized    = "Specialized socio-cognitive",
+  Physical_Terminal = "Sensory-physical"
 )
 MIN_N <- 30L
  
@@ -197,7 +199,7 @@ dt_adopt[, c("status_source", "status_target", "status_pc1") := NULL]
 if (!"atc_archetype" %in% names(dt_adopt)) {
   cs_med <- dt_adopt[domain == "Cognitive", median(cs, na.rm = TRUE)]
   dt_adopt[, atc_archetype := fcase(
-    domain == "Cognitive" & cs >= cs_med, "SC_Scaffolding",
+    domain == "Cognitive" & cs >= cs_med, "SC_General",
     domain == "Cognitive" & cs <  cs_med, "SC_Specialized",
     domain == "Physical",                  "Physical_Terminal"
   )]
@@ -243,7 +245,7 @@ dt_aband[, c("status_source", "status_target", "status_pc1") := NULL]
 if (!"atc_archetype" %in% names(dt_aband)) {
   cs_med <- dt_aband[domain == "Cognitive", median(cs, na.rm = TRUE)]
   dt_aband[, atc_archetype := fcase(
-    domain == "Cognitive" & cs >= cs_med, "SC_Scaffolding",
+    domain == "Cognitive" & cs >= cs_med, "SC_General",
     domain == "Cognitive" & cs <  cs_med, "SC_Specialized",
     domain == "Physical",                  "Physical_Terminal"
   )]

@@ -117,7 +117,7 @@ domain_lkp   <- unique(readRDS(
 cs_scores    <- merge(cs_scores, domain_lkp, by = "skill_name", all.x = TRUE)
 med_cog      <- cs_scores[domain == "Cognitive", median(cs, na.rm = TRUE)]
 cs_scores[, atc_archetype := fcase(
-  domain == "Cognitive" & cs >= med_cog, "SC_Scaffolding",
+  domain == "Cognitive" & cs >= med_cog, "SC_General",
   domain == "Cognitive" & cs <  med_cog, "SC_Specialized",
   domain == "Physical",                   "Physical_Terminal"
 )]

@@ -170,7 +170,7 @@ extract_coefs <- function(m, flow_label, panel_label, model_label) {
                    estimate = ct[, "Estimate"],
                    se       = ct[, "Std. Error"])
 
-  archetypes <- c("SC_Specialized", "SC_Scaffolding", "Physical_Terminal")
+  archetypes <- c("SC_Specialized", "SC_General", "Physical_Terminal")
   rows <- rbindlist(lapply(archetypes, function(arch) {
     find_val <- function(var_name) {
       # fixest can order interaction terms either way
@@ -322,8 +322,8 @@ compare[, panel_lab := factor(
 compare[, coef_lab := fcase(
   term == "b_up" & archetype == "SC_Specialized",   "β↑ Spec. SC",
   term == "b_dn" & archetype == "SC_Specialized",   "β↓ Spec. SC",
-  term == "b_up" & archetype == "SC_Scaffolding",   "β↑ Gen. SC",
-  term == "b_dn" & archetype == "SC_Scaffolding",   "β↓ Gen. SC",
+  term == "b_up" & archetype == "SC_General",   "β↑ Gen. SC",
+  term == "b_dn" & archetype == "SC_General",   "β↓ Gen. SC",
   term == "b_up" & archetype == "Physical_Terminal", "β↑ Physical",
   term == "b_dn" & archetype == "Physical_Terminal", "β↓ Physical"
 )]

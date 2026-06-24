@@ -34,7 +34,7 @@ DIR_DERIVED <- "data/derived"
 dir.create(MANUSCRIPT_TABLES, showWarnings = FALSE, recursive = TRUE)
 
 # ---- Formatting helpers ----------------------------------------------------
-ARCH_LABEL <- c(SC_Scaffolding = "Gen.\\ SC",
+ARCH_LABEL <- c(SC_General = "Gen.\\ SC",
                 SC_Specialized = "Spec.\\ SC",
                 Physical_Terminal = "Physical")
 
@@ -63,12 +63,12 @@ make_coef_table <- function(csv, label, file, title, nobs) {
   g <- function(panel, var, arch) d[d$panel == panel & d$var == var & d$archetype == arch, ]
   # one cell pair (estimate w/ stars, SE) for a (panel,var) across the 3 archetypes
   est_row <- function(panel, var) {
-    a <- c("SC_Scaffolding", "SC_Specialized", "Physical_Terminal")
+    a <- c("SC_General", "SC_Specialized", "Physical_Terminal")
     paste(sapply(a, function(x){ r <- g(panel, var, x); paste0("$", f3(r$coef), sup(r$sig), "$") }),
           collapse = " & ")
   }
   se_row <- function(panel, var) {
-    a <- c("SC_Scaffolding", "SC_Specialized", "Physical_Terminal")
+    a <- c("SC_General", "SC_Specialized", "Physical_Terminal")
     paste(sapply(a, function(x){ r <- g(panel, var, x); paste0("$(", f3(r$se), ")$") }),
           collapse = " & ")
   }
@@ -242,8 +242,8 @@ make_gradients <- function() {
       paste0(" & Spec. SC   & A & ", rr(flow, "SC_Specialized", "Panel A")),
       paste0(" &            & B & ", rr(flow, "SC_Specialized", "Panel B")),
       "\\cmidrule(lr){2-10}",
-      paste0(" & Gen. SC    & A & ", rr(flow, "SC_Scaffolding", "Panel A")),
-      paste0(" &            & B & ", rr(flow, "SC_Scaffolding", "Panel B")),
+      paste0(" & Gen. SC    & A & ", rr(flow, "SC_General", "Panel A")),
+      paste0(" &            & B & ", rr(flow, "SC_General", "Panel B")),
       "\\cmidrule(lr){2-10}",
       paste0(" & Physical   & A & ", rr(flow, "Physical_Terminal", "Panel A")),
       paste0(" &            & B & ", rr(flow, "Physical_Terminal", "Panel B")))
@@ -309,7 +309,7 @@ make_rca_denom <- function() {
            "   & ", ck(r$sign_match_fixed), ck(r$sign_match_raw))
   }
   pblock <- function(flow, panel, lead) {
-    archs <- c("SC_Specialized", "SC_Scaffolding", "Physical_Terminal")
+    archs <- c("SC_Specialized", "SC_General", "Physical_Terminal")
     labs  <- c("Spec.\\ SC", "Gen.\\ SC", "Physical")
     out <- character(0)
     for (i in seq_along(archs)) {
@@ -395,7 +395,7 @@ make_weighting <- function() {
            " & ", cell(wt(flow, panel, arch, term, "estimate"), wt(flow, panel, arch, term, "se")))
   }
   pblock <- function(flow, panel, lead) {
-    archs <- c("SC_Specialized", "SC_Scaffolding", "Physical_Terminal")
+    archs <- c("SC_Specialized", "SC_General", "Physical_Terminal")
     labs  <- c("Spec.\\ SC", "Gen.\\ SC", "Physical")
     out <- character(0)
     for (i in seq_along(archs)) {

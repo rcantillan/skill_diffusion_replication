@@ -8,12 +8,8 @@
 #   Row 1 (Adoption):    Panel A Source FE | Panel B Target FE
 #   Row 2 (Abandonment): Panel C Source FE | Panel D Target FE
 #
-# Input:  output/models/model_adoption_panelA.rds
-#         output/models/model_adoption_panelB.rds
-#         output/models/model_abandonment_panelA.rds
-#         output/models/model_abandonment_panelB.rds
-#         output/models/rug_segs_adoption.rds
-#         output/models/rug_segs_abandonment.rds
+# Input:  output/tables/main/coefs_pc1_adoption.csv
+#         output/tables/abandonment/coefs_pc1_abandonment.csv
 #         output/tables/main/pca_status_decision.csv
 #
 # Output: output/figures/main/fig2_regression.pdf / .png
@@ -39,12 +35,8 @@ dir.create(out_figs,   showWarnings = FALSE, recursive = TRUE)
 # Verify inputs
 # ==============================================================================
 inputs <- c(
-  "output/models/model_adoption_panelA.rds",
-  "output/models/model_adoption_panelB.rds",
-  "output/models/model_abandonment_panelA.rds",
-  "output/models/model_abandonment_panelB.rds",
-  "output/models/rug_segs_adoption.rds",
-  "output/models/rug_segs_abandonment.rds",
+  "output/tables/main/coefs_pc1_adoption.csv",
+  "output/tables/abandonment/coefs_pc1_abandonment.csv",
   file.path(out_tables, "pca_status_decision.csv")
 )
 for (f in inputs) stopifnot(file.exists(f))
@@ -56,14 +48,14 @@ pc1_pct_var <- round(pca_dec$pc1_pct_var, 1)
 # ==============================================================================
 # Constants
 # ==============================================================================
-MAIN_ARCHETYPES <- c("SC_Scaffolding", "SC_Specialized", "Physical_Terminal")
+MAIN_ARCHETYPES <- c("SC_General", "SC_Specialized", "Physical_Terminal")
 ARCH_LABELS <- c(
-  SC_Scaffolding    = "Specialized socio-cognitive",
-  SC_Specialized    = "General socio-cognitive",
-  Physical_Terminal = "Physical-sensory"
+  SC_General    = "General socio-cognitive",
+  SC_Specialized    = "Specialized socio-cognitive",
+  Physical_Terminal = "Sensory-physical"
 )
 ARCH_COLOURS <- c(
-  SC_Scaffolding    = "#3B4992",
+  SC_General    = "#3B4992",
   SC_Specialized    = "#008280",
   Physical_Terminal = "#EE0000"
 )
@@ -82,7 +74,7 @@ BAND_H     <-  0.11
 TICK_H     <-  BAND_H * 0.75
 y_band <- c(
   Physical_Terminal = Y_RUG_BASE + BAND_H * 0.5,
-  SC_Scaffolding    = Y_RUG_BASE + BAND_H * 1.5,
+  SC_General    = Y_RUG_BASE + BAND_H * 1.5,
   SC_Specialized    = Y_RUG_BASE + BAND_H * 2.5
 )
 
@@ -109,7 +101,7 @@ extract_coefs <- function(path) {
   if ("z value"    %in% nms) setnames(ct, "z value",    "z")
   if ("Pr(>|z|)"   %in% nms) setnames(ct, "Pr(>|z|)",  "p")
   ct[, archetype := fcase(
-    grepl("SC_Scaffolding",    term), "SC_Scaffolding",
+    grepl("SC_General",    term), "SC_General",
     grepl("SC_Specialized",    term), "SC_Specialized",
     grepl("Physical_Terminal", term), "Physical_Terminal",
     default = NA_character_
@@ -312,22 +304,26 @@ build_panel <- function(ct, rug_segs, title, y_label,
 }
 
 # ==============================================================================
-# Load models and rug
+# Load coefficients from saved CSV tables (no model RDS required)
 # ==============================================================================
-message("Loading models and coefficients...")
+message("Loading coefficients from CSV tables...")
 
-ct_adopt_A <- extract_coefs("output/models/model_adoption_panelA.rds")
-ct_adopt_B <- extract_coefs("output/models/model_adoption_panelB.rds")
-ct_aband_A <- extract_coefs("output/models/model_abandonment_panelA.rds")
-ct_aband_B <- extract_coefs("output/models/model_abandonment_panelB.rds")
+load_coefs_csv <- function(path, panel_label) {
+  dt <- fread(path)
+  dt[panel == panel_label, .(var, archetype, coef, se, p)]
+}
 
-message("Loading rug segments...")
-rug_adopt <- readRDS("output/models/rug_segs_adoption.rds")
-rug_aband <- readRDS("output/models/rug_segs_abandonment.rds")
-setDT(rug_adopt); setDT(rug_aband)
+ct_adopt_A <- load_coefs_csv("output/tables/main/coefs_pc1_adoption.csv",        "Panel A")
+ct_adopt_B <- load_coefs_csv("output/tables/main/coefs_pc1_adoption.csv",        "Panel B")
+ct_aband_A <- load_coefs_csv("output/tables/abandonment/coefs_pc1_abandonment.csv", "Panel A")
+ct_aband_B <- load_coefs_csv("output/tables/abandonment/coefs_pc1_abandonment.csv", "Panel B")
 
-message("  Rug adopt columns: ", paste(names(rug_adopt), collapse=", "))
-message("  Rug aband columns: ", paste(names(rug_aband), collapse=", "))
+message("  Adoption Panel A: ", nrow(ct_adopt_A), " rows")
+message("  Abandonment Panel A: ", nrow(ct_aband_A), " rows")
+
+# Rug segments not available; plots render without marginal density strips
+rug_adopt <- NULL
+rug_aband <- NULL
 
 # ==============================================================================
 # Build 4 panels

@@ -61,7 +61,7 @@ message(sprintf("PC1: %.1f%% var | flip: %s | FORCE_REFIT: %s",
                 ifelse(pca_dec$needs_flip, "YES", "NO"),
                 FORCE_REFIT))
 
-MAIN_ARCHETYPES <- c("SC_Scaffolding", "SC_Specialized", "Physical_Terminal")
+MAIN_ARCHETYPES <- c("SC_General", "SC_Specialized", "Physical_Terminal")
 
 # ==============================================================================
 # Step 1 — Load data and verify
@@ -81,7 +81,7 @@ message(sprintf("  Rows: %s | Abandonment rate: %.4f",
 if (!"atc_archetype" %in% names(dt)) {
   cs_med <- dt[domain == "Cognitive", median(cs, na.rm = TRUE)]
   dt[, atc_archetype := fcase(
-    domain == "Cognitive" & cs >= cs_med, "SC_Scaffolding",
+    domain == "Cognitive" & cs >= cs_med, "SC_General",
     domain == "Cognitive" & cs <  cs_med, "SC_Specialized",
     domain == "Physical",                  "Physical_Terminal"
   )]
@@ -240,7 +240,7 @@ extract_coefs <- function(model_path, panel_label) {
 
   ct[, panel     := panel_label]
   ct[, archetype := fcase(
-    grepl("SC_Scaffolding",    term), "SC_Scaffolding",
+    grepl("SC_General",    term), "SC_General",
     grepl("SC_Specialized",    term), "SC_Specialized",
     grepl("Physical_Terminal", term), "Physical_Terminal",
     default = NA_character_
@@ -284,7 +284,7 @@ print(atc_dt[order(panel, archetype)])
 # Panel A verification
 message("\n  CHECK Panel A:")
 b_up_sc  <- coefs[panel=="Panel A" & var=="b_up" &
-                  archetype %in% c("SC_Scaffolding","SC_Specialized"),
+                  archetype %in% c("SC_General","SC_Specialized"),
                   mean(coef)]
 b_up_phy <- coefs[panel=="Panel A" & var=="b_up" &
                   archetype == "Physical_Terminal", coef[1]]

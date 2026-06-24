@@ -7,7 +7,7 @@
 # domain. Kernel density estimates of the standardized leave-one-out nestedness
 # contribution c_s for socio-cognitive (teal) and sensory/physical (grey)
 # requirements. The vertical dashed line marks the within-domain median used
-# to classify archetypes into SC_Scaffolding (c_s >= median within Cognitive)
+# to classify archetypes into SC_General (c_s >= median within Cognitive)
 # and SC_Specialized (c_s < median within Cognitive); all sensory/physical
 # requirements map to Physical_Terminal regardless of c_s position.
 #
@@ -58,7 +58,7 @@ med_cog <- cs[domain == "Cognitive", median(cs, na.rm = TRUE)]
 message(sprintf("  Within-domain median c_s (Cognitive): %.4f", med_cog))
 
 cs[, archetype := fcase(
-  domain == "Cognitive" & cs >= med_cog, "SC_Scaffolding",
+  domain == "Cognitive" & cs >= med_cog, "SC_General",
   domain == "Cognitive" & cs <  med_cog, "SC_Specialized",
   domain == "Physical",                   "Physical_Terminal"
 )]
@@ -120,17 +120,17 @@ fig_S2 <- ggplot(cs, aes(x = cs, fill = domain, colour = domain)) +
              linetype = "dashed") +
              
   annotate("text", x = med_cog - 0.5, y = Inf,
-           label = "SC_specialized", hjust = 1, vjust = 1.5,
+           label = "Spec. socio-cognitive", hjust = 1, vjust = 1.5,
            size = 5.0, colour = "#008280", fontface = "italic",
            family = "Helvetica") +
   annotate("text", x = med_cog + 0.5, y = Inf,
-           label = "SC_general", hjust = 0, vjust = 1.5,
+           label = "Gen. socio-cognitive", hjust = 0, vjust = 1.5,
            size = 5.0, colour = "#008280", fontface = "italic",
            family = "Helvetica") +
-           
-  # Center "Sensory_physical" label over the grey curve peak (approx at -5)
+
+  # Center "Sensory-physical" label over the grey curve peak (approx at -5)
   annotate("text", x = -5.0, y = Inf,
-           label = "Sensory_physical", hjust = 0.5, vjust = 1.5,
+           label = "Sensory-physical", hjust = 0.5, vjust = 1.5,
            size = 5.0, colour = "#8c8c8c", fontface = "italic",
            family = "Helvetica") +
            
@@ -138,7 +138,7 @@ fig_S2 <- ggplot(cs, aes(x = cs, fill = domain, colour = domain)) +
   scale_colour_manual(values = DOM_COLS, labels = DOM_LBLS, name = NULL) +
   
   # Limits set here so tails reach zero;
-  # extended to 19 to leave room for the "SC_Scaffolding" label
+  # extended to 19 to leave room for the "SC_General" label
   scale_x_continuous(
     limits = c(-12, 19), 
     expand = expansion(mult = c(0.02, 0.02))

@@ -1,7 +1,7 @@
 panel,archetype,b_up,b_dn,dtc_index
 Panel A,Physical_Terminal,0.0946,-0.0058,0.1004
-Panel A,SC_Scaffolding,-0.2433,-0.2265,-0.0168
+Panel A,SC_General,-0.2433,-0.2265,-0.0168
 Panel A,SC_Specialized,-0.2579,-0.2812,0.0233
 Panel B,Physical_Terminal,0.1979,0.167,0.0309
-Panel B,SC_Scaffolding,-0.094,-0.0464,-0.0476
+Panel B,SC_General,-0.094,-0.0464,-0.0476
 Panel B,SC_Specialized,-0.0977,-0.0998,0.0021

@@ -47,7 +47,7 @@ med_cog <- median(dt[domain == "Cognitive", cs], na.rm = TRUE)
 message(sprintf("  Median cs (Cognitive): %.3f", med_cog))
 
 dt[, atc_archetype := fcase(
-  domain == "Cognitive" & cs >= med_cog, "SC_Scaffolding",
+  domain == "Cognitive" & cs >= med_cog, "SC_General",
   domain == "Cognitive" & cs <  med_cog, "SC_Specialized",
   domain == "Physical",                   "Physical_Terminal"
 )]

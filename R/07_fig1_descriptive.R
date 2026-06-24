@@ -42,28 +42,31 @@ out_figs <- file.path("output", "figures", "main")
 dir.create(out_figs, showWarnings = FALSE, recursive = TRUE)
 
 # ==============================================================================
-# 1. Rutas de Datos
+# 1. Data paths
 # ==============================================================================
 adopt_rds   <- "data/derived/riskset_adoption.rds"
 aband_rds   <- "data/derived/riskset_abandonment.rds"
 scores_path <- "output/tables/main/occ_status_scores.csv"
 dec_path    <- "output/tables/main/pca_status_decision.csv"
 
-for (f in c(adopt_rds, aband_rds, scores_path, dec_path)) stopifnot(file.exists(f))
+for (f in c(adopt_rds, aband_rds, scores_path, dec_path)) {
+  if (!file.exists(f)) stop(sprintf(
+    "Required file not found: %s\n  Run the pipeline first:\n  Rscript R/01b_risk_set_abandonment.R\n  Rscript R/02b_enrich_abandonment.R\n  Rscript R/03c_nestedness_merge_ab.R", f))
+}
 
 pca_dec     <- fread(dec_path)
 pc1_pct_var <- round(pca_dec$pc1_pct_var, 1)
 message(sprintf("PC1: %.1f%% var | flip: %s", pc1_pct_var, ifelse(pca_dec$needs_flip, "YES", "NO")))
 
 # ==============================================================================
-# 2. Constantes y Estilos
+# 2. Constants and style
 # ==============================================================================
-CLASS_LEVELS  <- c("SC_Scaffolding", "SC_Specialized", "Physical_Terminal")
-CLASS_LABELS <- c("Specialized socio-cognitive", "General socio-cognitive", "sensory-physical")
-CLASS_SHORT <- c("Spec. SC", "Gen. SC", "sensory-physical") 
+CLASS_LEVELS  <- c("SC_General", "SC_Specialized", "Physical_Terminal")
+CLASS_LABELS <- c("General socio-cognitive", "Specialized socio-cognitive", "Sensory-physical")
+CLASS_SHORT <- c("Gen. SC", "Spec. SC", "Sensory-physical")
 
-CLASS_COLOURS <- c("SC_Scaffolding" = "#3B4992", "SC_Specialized" = "#008280", "Physical_Terminal" = "#EE0000")
-CLASS_COLOURS_LIGHT <- c("SC_Scaffolding" = "#8E99D2", "SC_Specialized" = "#66B2B2", "Physical_Terminal" = "#F56666")
+CLASS_COLOURS <- c("SC_General" = "#3B4992", "SC_Specialized" = "#008280", "Physical_Terminal" = "#EE0000")
+CLASS_COLOURS_LIGHT <- c("SC_General" = "#8E99D2", "SC_Specialized" = "#66B2B2", "Physical_Terminal" = "#F56666")
 CLASS_FILLS   <- CLASS_COLOURS
 
 PT_AX     <- 9.5; PT_LAB <- 10.0; PT_TITLE <- 11.5; PT_ANN <- 8.5
@@ -96,7 +99,7 @@ add_status_and_quintiles <- function(dt, scores) {
 make_skill_class <- function(dt) {
   cs_med <- dt[domain == "Cognitive", median(cs, na.rm = TRUE)]
   dt[, skill_class := fcase(
-    domain == "Cognitive" & cs >= cs_med, "SC_Scaffolding",
+    domain == "Cognitive" & cs >= cs_med, "SC_General",
     domain == "Cognitive" & cs <  cs_med, "SC_Specialized",
     domain == "Physical",                  "Physical_Terminal"
   )]
@@ -277,8 +280,8 @@ make_mini_flow <- function(net_obj, arch) {
 }
 
 strip_theme <- theme(plot.background = element_rect(fill = alpha("white", 0.88), colour = "grey78", linewidth = 0.35), plot.margin = margin(2, 4, 2, 4))
-strip_C <- (make_mini_flow(net_adopt, "SC_Scaffolding") | make_mini_flow(net_adopt, "SC_Specialized") | make_mini_flow(net_adopt, "Physical_Terminal")) + plot_annotation(theme = strip_theme)
-strip_D <- (make_mini_flow(net_aband, "SC_Scaffolding") | make_mini_flow(net_aband, "SC_Specialized") | make_mini_flow(net_aband, "Physical_Terminal")) + plot_annotation(theme = strip_theme)
+strip_C <- (make_mini_flow(net_adopt, "SC_General") | make_mini_flow(net_adopt, "SC_Specialized") | make_mini_flow(net_adopt, "Physical_Terminal")) + plot_annotation(theme = strip_theme)
+strip_D <- (make_mini_flow(net_aband, "SC_General") | make_mini_flow(net_aband, "SC_Specialized") | make_mini_flow(net_aband, "Physical_Terminal")) + plot_annotation(theme = strip_theme)
 
 pC <- pC_base + inset_element(strip_C, left = 0.0, bottom = 0.74, right = 1.0, top = 1.00, align_to = "panel", clip = FALSE)
 pD <- pD_base + inset_element(strip_D, left = 0.0, bottom = 0.74, right = 1.0, top = 1.00, align_to = "panel", clip = FALSE)

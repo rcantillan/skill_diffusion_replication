@@ -11,14 +11,14 @@
 # c = 0 and decays as |c| → 1, consistent with progressive dyad
 # misclassification.
 #
-# Skill types (3): SC_Scaffolding (specialized socio-cognitive),
-#                  SC_Specialized (general socio-cognitive),
+# Skill types (3): SC_General (general socio-cognitive),
+#                  SC_Specialized (specialized socio-cognitive),
 #                  Physical_Terminal (physical-sensory).
 # The model includes atc_archetype as the interaction term instead of the
 # coarser domain (Cognitive / Physical) used in earlier versions.
 #
 # Parameters recovered per panel × flow × cutoff:
-#   b_up_SC_Scaffolding,    b_dn_SC_Scaffolding
+#   b_up_SC_General,    b_dn_SC_General
 #   b_up_SC_Specialized,    b_dn_SC_Specialized
 #   b_up_Physical_Terminal, b_dn_Physical_Terminal
 #
@@ -39,14 +39,14 @@ library(patchwork)
 library(cowplot)
 
 # Three skill types — ordered for figure facets
-SKILL_LEVELS <- c("SC_Scaffolding", "SC_Specialized", "Physical_Terminal")
-SKILL_LABELS <- c("Specialized socio-cognitive",
-                  "General socio-cognitive",
-                  "Physical-sensory")
+SKILL_LEVELS <- c("SC_General", "SC_Specialized", "Physical_Terminal")
+SKILL_LABELS <- c("General socio-cognitive",
+                  "Specialized socio-cognitive",
+                  "Sensory-physical")
 
 # Key coefficients: β↑ and β↓ for each of the three skill types
 COEF_KEY <- c(
-  "b_up_SC_Scaffolding",    "b_dn_SC_Scaffolding",
+  "b_up_SC_General",    "b_dn_SC_General",
   "b_up_SC_Specialized",    "b_dn_SC_Specialized",
   "b_up_Physical_Terminal", "b_dn_Physical_Terminal"
 )
@@ -78,10 +78,10 @@ extract_coefs_3skill <- function(model, panel_label, flow_label) {
                   paste(head(ct$term, 20), collapse = " | ")))
 
   # Expected term names — fixest interaction format:
-  # pc1_up:atc_archetypeSC_Scaffolding  (continuous × factor level)
+  # pc1_up:atc_archetypeSC_General  (continuous × factor level)
   term_map <- list(
-    b_up_SC_Scaffolding    = "pc1_up:atc_archetypeSC_Scaffolding",
-    b_dn_SC_Scaffolding    = "pc1_down:atc_archetypeSC_Scaffolding",
+    b_up_SC_General    = "pc1_up:atc_archetypeSC_General",
+    b_dn_SC_General    = "pc1_down:atc_archetypeSC_General",
     b_up_SC_Specialized    = "pc1_up:atc_archetypeSC_Specialized",
     b_dn_SC_Specialized    = "pc1_down:atc_archetypeSC_Specialized",
     b_up_Physical_Terminal = "pc1_up:atc_archetypePhysical_Terminal",
@@ -189,7 +189,7 @@ run_placebo <- function(setup, fe_vars, panel_label) {
   results    <- list()
 
   # atc_archetype has 3 levels; fixest will produce one interaction per level.
-  # Reference level is SC_Scaffolding (first factor level); all three slopes
+  # Reference level is SC_General (first factor level); all three slopes
   # are recovered via extract_coefs_3skill() using exact term matching.
   fml <- as.formula(sprintf(
     "%s ~ (up_dummy + pc1_up + pc1_down + structural_distance) : atc_archetype",
@@ -278,7 +278,7 @@ for (fl in c("adoption", "abandonment")) {
 message("\n>>> Key β↑ coefficients (Panel A):")
 print(dcast(
   placebo_all[panel == "Panel A" &
-                coef %in% c("b_up_SC_Scaffolding",
+                coef %in% c("b_up_SC_General",
                              "b_up_SC_Specialized",
                              "b_up_Physical_Terminal")],
   flow + c_shift ~ coef, value.var = "estimate"
@@ -312,14 +312,14 @@ plot_data[, direction := fifelse(grepl("^b_up", coef), "\u03b2\u2191", "\u03b2\u
 
 # Skill type label — extract from coef name
 plot_data[, skill_type := fcase(
-  grepl("SC_Scaffolding",    coef), "Specialized socio-cognitive",
-  grepl("SC_Specialized",    coef), "General socio-cognitive",
-  grepl("Physical_Terminal", coef), "Physical-sensory"
+  grepl("SC_General",    coef), "General socio-cognitive",
+  grepl("SC_Specialized",    coef), "Specialized socio-cognitive",
+  grepl("Physical_Terminal", coef), "Sensory-physical"
 )]
 plot_data[, skill_type := factor(skill_type,
-  levels = c("Specialized socio-cognitive",
-             "General socio-cognitive",
-             "Physical-sensory"))]
+  levels = c("General socio-cognitive",
+             "Specialized socio-cognitive",
+             "Sensory-physical"))]
 plot_data[, direction := factor(direction,
   levels = c("\u03b2\u2191", "\u03b2\u2193"))]
 plot_data[, flow_label := factor(
@@ -330,14 +330,14 @@ plot_data[, flow_label := factor(
 base_ref <- baseline[panel == "Panel A" & coef %in% COEF_KEY]
 base_ref[, direction := fifelse(grepl("^b_up", coef), "\u03b2\u2191", "\u03b2\u2193")]
 base_ref[, skill_type := fcase(
-  grepl("SC_Scaffolding",    coef), "Specialized socio-cognitive",
-  grepl("SC_Specialized",    coef), "General socio-cognitive",
-  grepl("Physical_Terminal", coef), "Physical-sensory"
+  grepl("SC_General",    coef), "General socio-cognitive",
+  grepl("SC_Specialized",    coef), "Specialized socio-cognitive",
+  grepl("Physical_Terminal", coef), "Sensory-physical"
 )]
 base_ref[, skill_type := factor(skill_type,
-  levels = c("Specialized socio-cognitive",
-             "General socio-cognitive",
-             "Physical-sensory"))]
+  levels = c("General socio-cognitive",
+             "Specialized socio-cognitive",
+             "Sensory-physical"))]
 base_ref[, direction := factor(direction,
   levels = c("\u03b2\u2191", "\u03b2\u2193"))]
 base_ref[, flow_label := factor(
@@ -451,7 +451,7 @@ message("    Next: SI_07_stratum_permutation.R")
 # ------------------------------------------------------------------------------
 if (file.exists("output/tables/si/test_ii_domain_perm.csv")) {
   perm <- fread("output/tables/si/test_ii_domain_perm.csv")
-  print(perm[coef %in% c("b_up_SC_Scaffolding",
+  print(perm[coef %in% c("b_up_SC_General",
                           "b_up_SC_Specialized",
                           "b_up_Physical_Terminal"),
              .(null_mean = round(mean(estimate), 3),

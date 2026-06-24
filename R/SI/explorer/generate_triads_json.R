@@ -41,7 +41,7 @@ DECILE_RANGES <- list(
   D4D6 = c(4L, 6L)
 )
 
-ARCH_3 <- c("SC_Scaffolding", "SC_Specialized", "Physical_Terminal")
+ARCH_3 <- c("SC_General", "SC_Specialized", "Physical_Terminal")
 
 out_dir  <- file.path("R", "SI", "explorer")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)

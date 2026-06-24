@@ -45,14 +45,14 @@ N_BINS     <- 10L
 N_BOOT     <- 500L
 SEED_FIG   <- 42L
 
-CLASS_LEVELS  <- c("SC_Scaffolding", "SC_Specialized", "Physical_Terminal")
-CLASS_LABELS  <- c("Specialized socio-cognitive",
-                   "General socio-cognitive",
-                   "Physical-sensory")
+CLASS_LEVELS  <- c("SC_General", "SC_Specialized", "Physical_Terminal")
+CLASS_LABELS  <- c("General socio-cognitive",
+                   "Specialized socio-cognitive",
+                   "Sensory-physical")
 CLASS_COLOURS <- c(
-  "Specialized socio-cognitive" = "#3B4992",
-  "General socio-cognitive"     = "#008280",
-  "Physical-sensory"            = "#EE0000"
+  "General socio-cognitive" = "#3B4992",
+  "Specialized socio-cognitive"     = "#008280",
+  "Sensory-physical"            = "#EE0000"
 )
 
 SI_TABLES <- "output/tables/si"

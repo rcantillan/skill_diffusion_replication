@@ -82,7 +82,7 @@ extract_coefs <- function(m, panel_short, threshold_val = NULL) {
 # extract_coefs_archetype()
 #
 # Variant of extract_coefs() for models with the three-archetype specification:
-#   SC_Scaffolding, SC_Specialized (reference), Physical_Terminal
+#   SC_General, SC_Specialized (reference), Physical_Terminal
 #
 # Parameters:
 #   m             fixest model object
@@ -97,7 +97,7 @@ extract_coefs_archetype <- function(m, panel_short) {
   ct <- fixest::coeftable(m)
   rn <- rownames(ct)
 
-  archetypes <- c("SC_Specialized", "SC_Scaffolding", "Physical_Terminal")
+  archetypes <- c("SC_Specialized", "SC_General", "Physical_Terminal")
 
   find_one <- function(pats) {
     for (p in pats) {

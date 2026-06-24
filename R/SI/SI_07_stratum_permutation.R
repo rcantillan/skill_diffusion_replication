@@ -9,8 +9,8 @@
 # Only destroys the within-stratum association between gap direction and outcome.
 #
 # Skill types (3 levels):
-#   SC_Scaffolding    — specialized socio-cognitive
-#   SC_Specialized    — general socio-cognitive
+#   SC_General    — general socio-cognitive
+#   SC_Specialized    — specialized socio-cognitive
 #   Physical_Terminal — physical-sensory
 #
 # If the directional friction coefficients collapse under permutation, the
@@ -43,18 +43,17 @@ library(ggplot2)
 library(patchwork)
 
 # Three skill types — ordered for factor levels and figure facets
-SKILL_LEVELS <- c("SC_Scaffolding", "SC_Specialized", "Physical_Terminal")
-SKILL_LABELS <- c("Specialized socio-cognitive",
-                  "General socio-cognitive",
-                  "Physical-sensory")
+SKILL_LEVELS <- c("SC_General", "SC_Specialized", "Physical_Terminal")
+SKILL_LABELS <- c("General socio-cognitive",
+                  "Specialized socio-cognitive",
+                  "Sensory-physical")
 
 COEF_KEY <- c(
-  "b_up_SC_Scaffolding",    "b_dn_SC_Scaffolding",
+  "b_up_SC_General",    "b_dn_SC_General",
   "b_up_SC_Specialized",    "b_dn_SC_Specialized",
   "b_up_Physical_Terminal", "b_dn_Physical_Terminal"
 )
 
-baseline <- fread(file.path(SI_TABLES, "baseline_coefs_2d.csv"))
 
 # ==============================================================================
 # extract_coefs_3skill()
@@ -72,8 +71,8 @@ extract_coefs_3skill <- function(model, panel_label, flow_label) {
   )
 
   term_map <- list(
-    b_up_SC_Scaffolding    = "pc1_up:atc_archetypeSC_Scaffolding",
-    b_dn_SC_Scaffolding    = "pc1_down:atc_archetypeSC_Scaffolding",
+    b_up_SC_General    = "pc1_up:atc_archetypeSC_General",
+    b_dn_SC_General    = "pc1_down:atc_archetypeSC_General",
     b_up_SC_Specialized    = "pc1_up:atc_archetypeSC_Specialized",
     b_dn_SC_Specialized    = "pc1_down:atc_archetypeSC_Specialized",
     b_up_Physical_Terminal = "pc1_up:atc_archetypePhysical_Terminal",
@@ -112,9 +111,9 @@ archetype_lkp <- unique(
       atc_archetype = as.character(atc_archetype))]
 )[!is.na(atc_archetype)]
 stopifnot(uniqueN(archetype_lkp$skill_name) == nrow(archetype_lkp))
-message(sprintf("  Lookup: %d skills | SC_Scaffolding=%d | SC_Specialized=%d | Physical_Terminal=%d",
+message(sprintf("  Lookup: %d skills | SC_General=%d | SC_Specialized=%d | Physical_Terminal=%d",
                 nrow(archetype_lkp),
-                archetype_lkp[atc_archetype == "SC_Scaffolding",    .N],
+                archetype_lkp[atc_archetype == "SC_General",    .N],
                 archetype_lkp[atc_archetype == "SC_Specialized",    .N],
                 archetype_lkp[atc_archetype == "Physical_Terminal", .N]))
 
@@ -126,6 +125,61 @@ attach_archetype <- function(setup) {
   setup$dt <- dt
   setup
 }
+
+# ==============================================================================
+# PART 0 — 3-SKILL OBSERVED BASELINE
+# Estimates the unperturbed 3-skill model (Panel A only) and saves coefficients.
+# This is the reference point for the permutation null distributions in PART 3.
+# Skipped if baseline_coefs_3skill.csv already exists.
+# ==============================================================================
+baseline_3skill_path <- file.path(SI_TABLES, "baseline_coefs_3skill.csv")
+
+if (!file.exists(baseline_3skill_path)) {
+  message("\n>>> PART 0: Estimating observed 3-skill baseline (Panel A)...")
+
+  fml_3skill_adopt <- as.formula(
+    "diffusion ~ (up_dummy + pc1_up + pc1_down + structural_distance) : atc_archetype")
+  fml_3skill_aband <- as.formula(
+    "abandonment ~ (up_dummy + pc1_up + pc1_down + structural_distance) : atc_archetype")
+
+  run_baseline_3skill <- function(fml, setup, panel_label = "Panel A") {
+    fe_vars <- c("source", "skill_name")
+    message(sprintf("  Estimating 3-skill baseline: %s (%s)...", setup$flow, panel_label))
+    t0 <- proc.time()["elapsed"]
+    m  <- feglm(
+      fml,
+      data      = setup$dt,
+      family    = binomial("cloglog"),
+      fixef     = fe_vars,
+      cluster   = c("source", "target", "skill_name"),
+      lean      = TRUE, mem.clean = TRUE, nthreads = 0
+    )
+    elapsed <- round((proc.time()["elapsed"] - t0) / 60, 1)
+    message(sprintf("  Completed in %.1f min", elapsed))
+    ct <- extract_coefs_3skill(m, panel_label, setup$flow)
+    rm(m); gc()
+    ct
+  }
+
+  setup_a0 <- attach_archetype(load_flow("adoption"))
+  coefs_a0 <- run_baseline_3skill(fml_3skill_adopt, setup_a0)
+  rm(setup_a0); gc()
+
+  setup_b0 <- attach_archetype(load_flow("abandonment"))
+  coefs_b0 <- run_baseline_3skill(fml_3skill_aband, setup_b0)
+  rm(setup_b0); gc()
+
+  baseline_3skill <- rbindlist(list(coefs_a0, coefs_b0))
+  fwrite(baseline_3skill, baseline_3skill_path)
+  message(sprintf("  Saved: %s", baseline_3skill_path))
+  print(baseline_3skill[, .(flow, panel, coef,
+                             estimate  = round(estimate,  3),
+                             std_error = round(std_error, 3))])
+} else {
+  message(sprintf(">>> [SKIP] Found existing %s", baseline_3skill_path))
+}
+
+baseline <- fread(baseline_3skill_path)
 
 # ==============================================================================
 # PART 1 — ESTIMATION (skip if test_iii_stratum_perm.csv already exists)
@@ -292,7 +346,7 @@ message("\n>>> Generating Fig. S7...")
 if (!exists("perm_all")) {
   message("Reloading from CSV...")
   perm_all   <- fread(file.path(SI_TABLES, "test_iii_stratum_perm.csv"))
-  baseline   <- fread(file.path(SI_TABLES, "baseline_coefs_2d.csv"))
+  baseline   <- fread(file.path(SI_TABLES, "baseline_coefs_3skill.csv"))
   null_stats <- fread(file.path(SI_TABLES, "test_iii_null_stats.csv"))
 }
 
@@ -303,14 +357,14 @@ plot_dt[, direction := fifelse(grepl("^b_up", coef), "\u03b2\u2191", "\u03b2\u21
 
 # Skill type label
 plot_dt[, skill_type := fcase(
-  grepl("SC_Scaffolding",    coef), "Specialized socio-cognitive",
-  grepl("SC_Specialized",    coef), "General socio-cognitive",
-  grepl("Physical_Terminal", coef), "Physical-sensory"
+  grepl("SC_General",    coef), "General socio-cognitive",
+  grepl("SC_Specialized",    coef), "Specialized socio-cognitive",
+  grepl("Physical_Terminal", coef), "Sensory-physical"
 )]
 plot_dt[, skill_type := factor(skill_type,
-  levels = c("Specialized socio-cognitive",
-             "General socio-cognitive",
-             "Physical-sensory"))]
+  levels = c("General socio-cognitive",
+             "Specialized socio-cognitive",
+             "Sensory-physical"))]
 plot_dt[, direction  := factor(direction,
   levels = c("\u03b2\u2191", "\u03b2\u2193"))]
 plot_dt[, flow_label := factor(
@@ -321,14 +375,14 @@ plot_dt[, flow_label := factor(
 base_ref <- baseline[panel == "Panel A" & coef %in% COEF_KEY]
 base_ref[, direction := fifelse(grepl("^b_up", coef), "\u03b2\u2191", "\u03b2\u2193")]
 base_ref[, skill_type := fcase(
-  grepl("SC_Scaffolding",    coef), "Specialized socio-cognitive",
-  grepl("SC_Specialized",    coef), "General socio-cognitive",
-  grepl("Physical_Terminal", coef), "Physical-sensory"
+  grepl("SC_General",    coef), "General socio-cognitive",
+  grepl("SC_Specialized",    coef), "Specialized socio-cognitive",
+  grepl("Physical_Terminal", coef), "Sensory-physical"
 )]
 base_ref[, skill_type := factor(skill_type,
-  levels = c("Specialized socio-cognitive",
-             "General socio-cognitive",
-             "Physical-sensory"))]
+  levels = c("General socio-cognitive",
+             "Specialized socio-cognitive",
+             "Sensory-physical"))]
 base_ref[, direction  := factor(direction,
   levels = c("\u03b2\u2191", "\u03b2\u2193"))]
 base_ref[, flow_label := factor(
@@ -339,21 +393,24 @@ base_ref[, flow_label := factor(
 null_ann <- null_stats[coef %in% COEF_KEY & !is.na(base_est)]
 null_ann[, direction := fifelse(grepl("^b_up", coef), "\u03b2\u2191", "\u03b2\u2193")]
 null_ann[, skill_type := fcase(
-  grepl("SC_Scaffolding",    coef), "Specialized socio-cognitive",
-  grepl("SC_Specialized",    coef), "General socio-cognitive",
-  grepl("Physical_Terminal", coef), "Physical-sensory"
+  grepl("SC_General",    coef), "General socio-cognitive",
+  grepl("SC_Specialized",    coef), "Specialized socio-cognitive",
+  grepl("Physical_Terminal", coef), "Sensory-physical"
 )]
 null_ann[, skill_type := factor(skill_type,
-  levels = c("Specialized socio-cognitive",
-             "General socio-cognitive",
-             "Physical-sensory"))]
+  levels = c("General socio-cognitive",
+             "Specialized socio-cognitive",
+             "Sensory-physical"))]
 null_ann[, direction  := factor(direction,
   levels = c("\u03b2\u2191", "\u03b2\u2193"))]
 null_ann[, flow_label := factor(
   fifelse(flow == "adoption", "Adoption", "Abandonment"),
   c("Adoption", "Abandonment"))]
 null_ann[, ann_label := sprintf("%+.3f\n(%.0f SDs)", base_est, abs(sep_sds))]
-null_ann[, hjust_val := fifelse(base_est >= 0, -0.08, 1.08)]
+# Pin annotation to panel edge so it's always visible regardless of how far
+# the observed coefficient falls from the null distribution.
+null_ann[, x_ann   := fifelse(base_est >= 0,  Inf, -Inf)]
+null_ann[, hjust_val := fifelse(base_est >= 0, 1.05, -0.05)]
 
 theme_si <- theme_classic(base_size = 13, base_family = "Helvetica") +
   theme(
@@ -390,7 +447,7 @@ make_flow_plot <- function(flow_name) {
                aes(xintercept = estimate),
                colour = "black", linewidth = 0.9) +
     geom_text(data = ann,
-              aes(x = base_est, y = Inf,
+              aes(x = x_ann, y = Inf,
                   label = ann_label,
                   hjust = hjust_val),
               vjust      = 1.2,
@@ -400,10 +457,12 @@ make_flow_plot <- function(flow_name) {
               inherit.aes = FALSE) +
     # 2 rows (direction: β↑ / β↓) × 3 columns (skill type)
     facet_grid(direction ~ skill_type, scales = "free") +
+    coord_cartesian(clip = "off") +
     labs(title = flow_name,
          x     = "Permuted estimate (cloglog scale)",
          y     = "Count") +
-    theme_si
+    theme_si +
+    theme(plot.margin = margin(t = 20, r = 20, b = 5, l = 5))
 }
 
 p_adopt <- make_flow_plot("Adoption")

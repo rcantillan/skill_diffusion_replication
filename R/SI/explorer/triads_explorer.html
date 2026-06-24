@@ -301,7 +301,7 @@ footer .sep{color:var(--faint);margin:0 6px}
     <div class="ctrl-label">Skill type</div>
     <div class="ctrl-hint">Toggle skill domains — colors match the manuscript figures</div>
     <div class="btn-row arch">
-      <button class="arch-btn sc-sc active" data-arch="SC_Scaffolding">Specialized socio-cognitive</button>
+      <button class="arch-btn sc-sc active" data-arch="SC_General">Specialized socio-cognitive</button>
       <button class="arch-btn sc-sp active" data-arch="SC_Specialized">General socio-cognitive</button>
       <button class="arch-btn phy   active" data-arch="Physical_Terminal">Physical-sensory</button>
     </div>
@@ -367,7 +367,7 @@ const S = {
   panel:   "A",
   decile:  "D2D9",
   sampling:"dyad_unique",
-  archs:   new Set(["SC_Scaffolding","SC_Specialized","Physical_Terminal"]),
+  archs:   new Set(["SC_General","SC_Specialized","Physical_Terminal"]),
   n:       20,
   cell:    null,
   data:    null
@@ -375,7 +375,7 @@ const S = {
 
 // ── CONSTANTS ──────────────────────────────────────────────────────────────
 const ARCH = {
-  SC_Scaffolding:    { short:"SC-Sc", label:"Specialized socio-cognitive",
+  SC_General:    { short:"SC-Sc", label:"Specialized socio-cognitive",
                        bg:"var(--sc-sc-bg)", fg:"var(--sc-sc-fg)", dot:"#3B4992" },
   SC_Specialized:    { short:"SC-Sp", label:"General socio-cognitive",
                        bg:"var(--sc-sp-bg)", fg:"var(--sc-sp-fg)", dot:"#B07A00" },

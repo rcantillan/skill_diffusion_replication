@@ -10,7 +10,7 @@
 #   (iii) 2022–2024: O*NET 27.1 → 29.2 (tag: 2224)
 #
 # Term names in fixest for this model:
-#   "pc1_up:atc_archetypeSC_Scaffolding"
+#   "pc1_up:atc_archetypeSC_General"
 #   "pc1_up:atc_archetypeSC_Specialized"
 #   "pc1_up:atc_archetypePhysical_Terminal"
 #   (and analogous for pc1_down, pc1_dummy, structural_distance)
@@ -34,7 +34,7 @@ SUBPERIODS <- list(
   list(label = "2022\u20132024", tag = "2224")
 )
  
-ARCH_3 <- c("SC_Scaffolding", "SC_Specialized", "Physical_Terminal")
+ARCH_3 <- c("SC_General", "SC_Specialized", "Physical_Terminal")
  
 # ==============================================================================
 # load_subperiod()
@@ -65,7 +65,7 @@ load_subperiod <- function(flow, tag, seed = SEED, frac = SAMPLE_FRAC) {
     cs_scores <- merge(cs_scores, domain_lkp, by = "skill_name", all.x = TRUE)
     med_cog   <- cs_scores[domain == "Cognitive", median(cs, na.rm = TRUE)]
     cs_scores[, atc_archetype := fcase(
-      domain == "Cognitive" & cs >= med_cog, "SC_Scaffolding",
+      domain == "Cognitive" & cs >= med_cog, "SC_General",
       domain == "Cognitive" & cs <  med_cog, "SC_Specialized",
       domain == "Physical",                   "Physical_Terminal"
     )]
@@ -168,75 +168,82 @@ extract_coefs_3arch <- function(m, panel_label, flow_label, period_label) {
 }
  
 # ==============================================================================
-# Main estimation loop
+# Main estimation loop (skipped if saved CSV exists)
 # ==============================================================================
-all_coefs <- list()
- 
-fml_3arch <- function(outcome) {
-  as.formula(sprintf(
-    "%s ~ (pc1_dummy + pc1_up + pc1_down + structural_distance):atc_archetype",
-    outcome))
-}
- 
-for (sp in SUBPERIODS) {
-  message("\n", strrep("=", 65))
-  message(sprintf(">>> Sub-period: %s", sp$label))
-  message(strrep("=", 65))
- 
-  for (flow in c("adoption", "abandonment")) {
-    setup <- load_subperiod(flow, sp$tag)
-    if (is.null(setup)) next
- 
-    fml <- fml_3arch(setup$outcome)
- 
-    for (fe_config in list(
-      list(fe = c("source", "skill_name"), label = "Panel A"),
-      list(fe = c("target", "skill_name"), label = "Panel B")
-    )) {
-      key  <- sprintf("%s_%s_%s", flow, sp$tag, gsub(" ","",fe_config$label))
-      ckpt <- file.path(SI_MODELS, sprintf("subperiod_%s.rds", key))
- 
-      if (file.exists(ckpt)) {
-        prev <- readRDS(ckpt)
-        if (!all(is.na(prev$estimate))) {
-          message(sprintf("  [cache] %s %s %s", flow, sp$label, fe_config$label))
-          all_coefs[[key]] <- prev
-          next
-        }
-        file.remove(ckpt)
-        message(sprintf("  [stale] Deleted %s", ckpt))
-      }
- 
-      message(sprintf("\n  Estimating %s %s %s...",
-                      flow, sp$label, fe_config$label))
-      t0 <- proc.time()["elapsed"]
- 
-      m <- feglm(
-        fml,
-        data      = setup$dt,
-        family    = binomial("cloglog"),
-        fixef     = fe_config$fe,
-        cluster   = c("source", "target", "skill_name"),
-        lean      = TRUE, mem.clean = TRUE, nthreads = 0
-      )
- 
-      elapsed <- round((proc.time()["elapsed"] - t0) / 60, 1)
-      message(sprintf("  Completed in %.1f min", elapsed))
- 
-      coefs <- extract_coefs_3arch(m, fe_config$label, flow, sp$label)
-      saveRDS(coefs, ckpt)
-      all_coefs[[key]] <- coefs
-      rm(m); gc()
-    }
-    rm(setup); gc()
+subperiods_path <- file.path(SI_TABLES, "table_S2_subperiods.csv")
+
+if (file.exists(subperiods_path)) {
+  message("  [cache] Loading saved sub-period results from: ", subperiods_path)
+  subperiod_all <- fread(subperiods_path)
+  message(sprintf("  Loaded %d rows.", nrow(subperiod_all)))
+} else {
+  all_coefs <- list()
+
+  fml_3arch <- function(outcome) {
+    as.formula(sprintf(
+      "%s ~ (pc1_dummy + pc1_up + pc1_down + structural_distance):atc_archetype",
+      outcome))
   }
+
+  for (sp in SUBPERIODS) {
+    message("\n", strrep("=", 65))
+    message(sprintf(">>> Sub-period: %s", sp$label))
+    message(strrep("=", 65))
+
+    for (flow in c("adoption", "abandonment")) {
+      setup <- load_subperiod(flow, sp$tag)
+      if (is.null(setup)) next
+
+      fml <- fml_3arch(setup$outcome)
+
+      for (fe_config in list(
+        list(fe = c("source", "skill_name"), label = "Panel A"),
+        list(fe = c("target", "skill_name"), label = "Panel B")
+      )) {
+        key  <- sprintf("%s_%s_%s", flow, sp$tag, gsub(" ","",fe_config$label))
+        ckpt <- file.path(SI_MODELS, sprintf("subperiod_%s.rds", key))
+
+        if (file.exists(ckpt)) {
+          prev <- readRDS(ckpt)
+          if (!all(is.na(prev$estimate))) {
+            message(sprintf("  [cache] %s %s %s", flow, sp$label, fe_config$label))
+            all_coefs[[key]] <- prev
+            next
+          }
+          file.remove(ckpt)
+          message(sprintf("  [stale] Deleted %s", ckpt))
+        }
+
+        message(sprintf("\n  Estimating %s %s %s...",
+                        flow, sp$label, fe_config$label))
+        t0 <- proc.time()["elapsed"]
+
+        m <- feglm(
+          fml,
+          data      = setup$dt,
+          family    = binomial("cloglog"),
+          fixef     = fe_config$fe,
+          cluster   = c("source", "target", "skill_name"),
+          lean      = TRUE, mem.clean = TRUE, nthreads = 0
+        )
+
+        elapsed <- round((proc.time()["elapsed"] - t0) / 60, 1)
+        message(sprintf("  Completed in %.1f min", elapsed))
+
+        coefs <- extract_coefs_3arch(m, fe_config$label, flow, sp$label)
+        saveRDS(coefs, ckpt)
+        all_coefs[[key]] <- coefs
+        rm(m); gc()
+      }
+      rm(setup); gc()
+    }
+  }
+
+  subperiod_all <- rbindlist(all_coefs)
+  fwrite(subperiod_all, subperiods_path)
+  message("  Saved: table_S2_subperiods.csv")
 }
- 
-# ==============================================================================
-# Consolidate and verify
-# ==============================================================================
-subperiod_all <- rbindlist(all_coefs)
-fwrite(subperiod_all, file.path(SI_TABLES, "table_S2_subperiods.csv"))
+
  
 message("\n>>> Sub-period results (β↑ Panel A):")
 key_coefs <- paste0("b_up_", ARCH_3)
@@ -295,7 +302,7 @@ lines <- c(
   "\\label{tab:SI_S2}",
   "\\begin{tabular}{llcccccc}",
   "\\toprule",
-  " & & \\multicolumn{2}{c}{Specialized socio-cognitive} & \\multicolumn{2}{c}{General socio-cognitive} & \\multicolumn{2}{c}{Physical-sensory} \\\\",
+  " & & \\multicolumn{2}{c}{General socio-cognitive} & \\multicolumn{2}{c}{Specialized socio-cognitive} & \\multicolumn{2}{c}{Sensory-physical} \\\\",
   "\\cmidrule(lr){3-4}\\cmidrule(lr){5-6}\\cmidrule(lr){7-8}",
   "Period & Panel & $\\beta^{\\uparrow}$ & $\\beta^{\\downarrow}$ & $\\beta^{\\uparrow}$ & $\\beta^{\\downarrow}$ & $\\beta^{\\uparrow}$ & $\\beta^{\\downarrow}$ \\\\",
   "\\midrule",
@@ -304,7 +311,7 @@ lines <- c(
  
 for (sp in SUBPERIODS) {
   for (pa in c("Panel A","Panel B")) {
-    r_sc <- make_row(subperiod_all,"adoption",sp$label,pa,"SC_Scaffolding")
+    r_sc <- make_row(subperiod_all,"adoption",sp$label,pa,"SC_General")
     r_sp <- make_row(subperiod_all,"adoption",sp$label,pa,"SC_Specialized")
     r_ph <- make_row(subperiod_all,"adoption",sp$label,pa,"Physical_Terminal")
     lines <- c(lines,
@@ -325,7 +332,7 @@ lines <- c(lines,
  
 for (sp in SUBPERIODS) {
   for (pa in c("Panel A","Panel B")) {
-    r_sc <- make_row(subperiod_all,"abandonment",sp$label,pa,"SC_Scaffolding")
+    r_sc <- make_row(subperiod_all,"abandonment",sp$label,pa,"SC_General")
     r_sp <- make_row(subperiod_all,"abandonment",sp$label,pa,"SC_Specialized")
     r_ph <- make_row(subperiod_all,"abandonment",sp$label,pa,"Physical_Terminal")
     lines <- c(lines,
@@ -342,7 +349,7 @@ for (sp in SUBPERIODS) {
 lines <- c(lines,
   "\\bottomrule",
   "\\multicolumn{8}{p{15cm}}{\\footnotesize Note:",
-  "  $\\hat{\\beta}^{\\uparrow}_{\\text{Physical-sensory}} < 0$ in adoption and $> 0$",
+  "  $\\hat{\\beta}^{\\uparrow}_{\\text{Sensory-physical}} < 0$ in adoption and $> 0$",
   "  in abandonment across all three sub-periods and both panels, confirming",
   "  the directional asymmetry is not confined to the full 2015--2024 window.",
   "  Specialized and general socio-cognitive requirements show positive",
@@ -371,7 +378,7 @@ if (!exists("subperiod_all")) {
 }
  
 COEF_KEY <- c(
-  "b_up_SC_Scaffolding",    "b_dn_SC_Scaffolding",
+  "b_up_SC_General",    "b_dn_SC_General",
   "b_up_SC_Specialized",    "b_dn_SC_Specialized",
   "b_up_Physical_Terminal", "b_dn_Physical_Terminal"
 )
@@ -399,14 +406,14 @@ plot_dt[, ci_hi := estimate + 1.96 * std_error]
 plot_dt[, direction := fifelse(grepl("^b_up", coef),
                                 "\u03b2\u2191", "\u03b2\u2193")]
 plot_dt[, skill_type := fcase(
-  grepl("SC_Scaffolding",    coef), "Specialized socio-cognitive",
-  grepl("SC_Specialized",    coef), "General socio-cognitive",
-  grepl("Physical_Terminal", coef), "Physical-sensory"
+  grepl("SC_General",    coef), "General socio-cognitive",
+  grepl("SC_Specialized",    coef), "Specialized socio-cognitive",
+  grepl("Physical_Terminal", coef), "Sensory-physical"
 )]
 plot_dt[, skill_type := factor(skill_type,
-  levels = c("Specialized socio-cognitive",
-             "General socio-cognitive",
-             "Physical-sensory"))]
+  levels = c("General socio-cognitive",
+             "Specialized socio-cognitive",
+             "Sensory-physical"))]
 plot_dt[, direction  := factor(direction,
   levels = c("\u03b2\u2191", "\u03b2\u2193"))]
 plot_dt[, flow_label := factor(

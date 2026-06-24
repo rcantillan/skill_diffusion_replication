@@ -9,8 +9,8 @@
 # or absolute SD < 0.02. Both criteria are reported.
 #
 # Skill types (3 levels):
-#   SC_Scaffolding    — specialized socio-cognitive
-#   SC_Specialized    — general socio-cognitive
+#   SC_General    — general socio-cognitive
+#   SC_Specialized    — specialized socio-cognitive
 #   Physical_Terminal — physical-sensory
 #
 # Runs for ADOPTION and ABANDONMENT, Panel A and Panel B.
@@ -24,15 +24,15 @@ source("R/SI/00_setup_SI.R")
 library(ggplot2)
 library(patchwork)
  
-SKILL_LEVELS <- c("SC_Scaffolding", "SC_Specialized", "Physical_Terminal")
+SKILL_LEVELS <- c("SC_General", "SC_Specialized", "Physical_Terminal")
 SKILL_LABELS <- c(
-  SC_Scaffolding    = "Specialized socio-cognitive",
-  SC_Specialized    = "General socio-cognitive",
-  Physical_Terminal = "Physical-sensory"
+  SC_General    = "General socio-cognitive",
+  SC_Specialized    = "Specialized socio-cognitive",
+  Physical_Terminal = "Sensory-physical"
 )
  
 COEF_KEY <- c(
-  "b_up_SC_Scaffolding",    "b_dn_SC_Scaffolding",
+  "b_up_SC_General",    "b_dn_SC_General",
   "b_up_SC_Specialized",    "b_dn_SC_Specialized",
   "b_up_Physical_Terminal", "b_dn_Physical_Terminal"
 )
@@ -52,8 +52,8 @@ extract_coefs_3skill <- function(model, panel_label, flow_label) {
     p_value   = ct_mat[, 4L]
   )
   term_map <- list(
-    b_up_SC_Scaffolding    = "pc1_up:atc_archetypeSC_Scaffolding",
-    b_dn_SC_Scaffolding    = "pc1_down:atc_archetypeSC_Scaffolding",
+    b_up_SC_General    = "pc1_up:atc_archetypeSC_General",
+    b_dn_SC_General    = "pc1_down:atc_archetypeSC_General",
     b_up_SC_Specialized    = "pc1_up:atc_archetypeSC_Specialized",
     b_dn_SC_Specialized    = "pc1_down:atc_archetypeSC_Specialized",
     b_up_Physical_Terminal = "pc1_up:atc_archetypePhysical_Terminal",
@@ -210,14 +210,14 @@ plot_dt[, direction := fifelse(grepl("^b_up", coef), "\u03b2\u2191", "\u03b2\u21
  
 # Skill type label
 plot_dt[, skill_type := fcase(
-  grepl("SC_Scaffolding",    coef), "Specialized socio-cognitive",
-  grepl("SC_Specialized",    coef), "General socio-cognitive",
-  grepl("Physical_Terminal", coef), "Physical-sensory"
+  grepl("SC_General",    coef), "General socio-cognitive",
+  grepl("SC_Specialized",    coef), "Specialized socio-cognitive",
+  grepl("Physical_Terminal", coef), "Sensory-physical"
 )]
 plot_dt[, skill_type := factor(skill_type,
-  levels = c("Specialized socio-cognitive",
-             "General socio-cognitive",
-             "Physical-sensory"))]
+  levels = c("General socio-cognitive",
+             "Specialized socio-cognitive",
+             "Sensory-physical"))]
 plot_dt[, direction  := factor(direction,
   levels = c("\u03b2\u2191", "\u03b2\u2193"))]
 plot_dt[, flow_label := factor(

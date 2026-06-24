@@ -8,7 +8,7 @@
 
 ## Overview
 
-This repository contains all code and derived data necessary to reproduce the analyses, figures, and supplementary materials reported in the paper. The project documents asymmetric directional flows of skill requirements across the occupational hierarchy: socio-cognitive skills concentrate upward while sensory-physical skills accumulate downward — and critically, both adoption and abandonment reinforce this divergence rather than attenuate it. This bilateral pattern constitutes a structural Matthew effect in occupational skill content.
+This repository contains all code and derived data necessary to reproduce the analyses, figures, and supplementary materials reported in the paper. The project documents asymmetric directional flows of skill requirements across the occupational hierarchy: socio-cognitive skills concentrate upward while Sensory-physical skills accumulate downward — and critically, both adoption and abandonment reinforce this divergence rather than attenuate it. This bilateral pattern constitutes a structural Matthew effect in occupational skill content.
 
 The core analytical contribution is a gravity model with a bilateral, directional specification applied to approximately 40 million directed dyadic observations across 741 occupations and 160 skill requirements from O\*NET (2015–2024), estimated via `feglm` with a complementary log-log link and three-way clustered standard errors.
 
@@ -116,6 +116,14 @@ BASE <- "~/Documents/Papers/skill_diffusion"
 ```
 
 ### Main pipeline
+
+The entire main pipeline can be run with a single command from the repository root:
+
+```bash
+Rscript R/00_run_all.R
+```
+
+This runs all steps in order, reports per-step timing, and halts with a clear error message if any step fails. Alternatively, run steps individually:
 
 ```bash
 Rscript R/01a_risk_set_adoption.R

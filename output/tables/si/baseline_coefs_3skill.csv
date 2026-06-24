@@ -1,0 +1,25 @@
+coef,estimate,std_error,panel,flow,sig
+b_up_SC_General,0.191453998860789,0.0346075355264016,Panel A,adoption,***
+b_dn_SC_General,0.12388691637427,0.0472309280261379,Panel A,adoption,**
+b_up_SC_Specialized,0.244763032692488,0.0436181562068366,Panel A,adoption,***
+b_dn_SC_Specialized,0.221584866023117,0.053679581401602,Panel A,adoption,***
+b_up_Physical_Terminal,-0.331277102606631,0.049675081169762,Panel A,adoption,***
+b_dn_Physical_Terminal,-0.0794115893339246,0.0434455707684578,Panel A,adoption,~
+b_up_SC_General,0.151319872568013,0.0303173899070581,Panel B,adoption,***
+b_dn_SC_General,0.00244654517224977,0.0232938363971511,Panel B,adoption,ns
+b_up_SC_Specialized,0.1858207721,0.0383038399032686,Panel B,adoption,***
+b_dn_SC_Specialized,0.107852594044796,0.0336536143221309,Panel B,adoption,**
+b_up_Physical_Terminal,-0.320208714579135,0.0428824105968056,Panel B,adoption,***
+b_dn_Physical_Terminal,-0.159678070524599,0.0342013324506594,Panel B,adoption,***
+b_up_SC_General,-0.247939102946805,0.035419969952877,Panel A,abandonment,***
+b_dn_SC_General,-0.234870398282431,0.0310641598409194,Panel A,abandonment,***
+b_up_SC_Specialized,-0.270148885262403,0.0449080236374305,Panel A,abandonment,***
+b_dn_SC_Specialized,-0.280219600302719,0.0338495589121972,Panel A,abandonment,***
+b_up_Physical_Terminal,0.0969211158051434,0.0462865522777701,Panel A,abandonment,*
+b_dn_Physical_Terminal,-0.0220866239567137,0.0402482725893653,Panel A,abandonment,ns
+b_up_SC_General,-0.0877245722065884,0.025797930633274,Panel B,abandonment,***
+b_dn_SC_General,-0.0482348356139456,0.017818313625142,Panel B,abandonment,**
+b_up_SC_Specialized,-0.0987299202923368,0.0348830497233036,Panel B,abandonment,**
+b_dn_SC_Specialized,-0.0935144715115325,0.023973732987676,Panel B,abandonment,***
+b_up_Physical_Terminal,0.208874582325344,0.0432920037128707,Panel B,abandonment,***
+b_dn_Physical_Terminal,0.163893659463901,0.0349717430269927,Panel B,abandonment,***

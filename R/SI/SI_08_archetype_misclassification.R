@@ -66,31 +66,31 @@ CONTAM_RATES <- c(0.10, 0.20)    # 10% and 20% contamination rates
 B_MISSCLASS  <- 200L
 CKPT_EVERY   <- 25L
 
-SKILL_LEVELS <- c("SC_Scaffolding", "SC_Specialized", "Physical_Terminal")
-SKILL_LABELS <- c("Specialized socio-cognitive",
-                  "General socio-cognitive",
-                  "Physical-sensory")
+SKILL_LEVELS <- c("SC_General", "SC_Specialized", "Physical_Terminal")
+SKILL_LABELS <- c("General socio-cognitive",
+                  "Specialized socio-cognitive",
+                  "Sensory-physical")
 
 COEF_KEY <- c(
-  "b_up_SC_Scaffolding",    "b_dn_SC_Scaffolding",
+  "b_up_SC_General",    "b_dn_SC_General",
   "b_up_SC_Specialized",    "b_dn_SC_Specialized",
   "b_up_Physical_Terminal", "b_dn_Physical_Terminal"
 )
 
 TERM_MAP <- list(
-  b_up_SC_Scaffolding    = "pc1_up:atc_archetypeSC_Scaffolding",
-  b_dn_SC_Scaffolding    = "pc1_down:atc_archetypeSC_Scaffolding",
+  b_up_SC_General    = "pc1_up:atc_archetypeSC_General",
+  b_dn_SC_General    = "pc1_down:atc_archetypeSC_General",
   b_up_SC_Specialized    = "pc1_up:atc_archetypeSC_Specialized",
   b_dn_SC_Specialized    = "pc1_down:atc_archetypeSC_Specialized",
   b_up_Physical_Terminal = "pc1_up:atc_archetypePhysical_Terminal",
   b_dn_Physical_Terminal = "pc1_down:atc_archetypePhysical_Terminal"
 )
 
-baseline_path <- file.path(SI_TABLES, "baseline_coefs_2d.csv")
+baseline_path <- file.path(SI_TABLES, "baseline_coefs_3skill.csv")
 baseline <- if (file.exists(baseline_path)) {
   fread(baseline_path)
 } else {
-  message("  [note] baseline_coefs_2d.csv not found — reference diamonds omitted")
+  message("  [note] baseline_coefs_3skill.csv not found — reference diamonds omitted")
   NULL
 }
 
@@ -243,7 +243,7 @@ run_missclass <- function(setup, p, B = B_MISSCLASS) {
   start_b <- length(done) + 1L
 
   if (start_b > B) {
-    message(sprintf("  [skip] %s ya completo (%d reps)", tag, B))
+    message(sprintf("  [skip] %s already complete (%d reps)", tag, B))
     return(rbindlist(done))
   }
 
@@ -341,25 +341,33 @@ run_missclass <- function(setup, p, B = B_MISSCLASS) {
 # ==============================================================================
 # Main
 # ==============================================================================
-setup_a <- load_flow_missclass("adoption")
-setup_b <- load_flow_missclass("abandonment")
+reps_path <- file.path(SI_TABLES, "test_archetype_misclassification.csv")
 
-all_reps <- list()
+if (file.exists(reps_path)) {
+  message("  [cache] Loading saved replications from: ", reps_path)
+  reps <- fread(reps_path)
+  message(sprintf("  Loaded %s rows.", format(nrow(reps), big.mark = ",")))
+} else {
+  setup_a <- load_flow_missclass("adoption")
+  setup_b <- load_flow_missclass("abandonment")
 
-for (p in CONTAM_RATES) {
-  message(sprintf("\n%s\n>>> Contamination: %.0f%% | %s\n%s",
-                  strrep("=", 60), p * 100,
-                  format(Sys.time(), "%H:%M:%S"),
-                  strrep("=", 60)))
-  all_reps[[sprintf("adopt_p%02d", as.integer(p * 100))]] <-
-    run_missclass(setup_a, p)
-  all_reps[[sprintf("aband_p%02d", as.integer(p * 100))]] <-
-    run_missclass(setup_b, p)
+  all_reps <- list()
+
+  for (p in CONTAM_RATES) {
+    message(sprintf("\n%s\n>>> Contamination: %.0f%% | %s\n%s",
+                    strrep("=", 60), p * 100,
+                    format(Sys.time(), "%H:%M:%S"),
+                    strrep("=", 60)))
+    all_reps[[sprintf("adopt_p%02d", as.integer(p * 100))]] <-
+      run_missclass(setup_a, p)
+    all_reps[[sprintf("aband_p%02d", as.integer(p * 100))]] <-
+      run_missclass(setup_b, p)
+  }
+
+  reps <- rbindlist(all_reps)
+  fwrite(reps, reps_path)
+  message("  Saved: test_archetype_misclassification.csv")
 }
-
-reps <- rbindlist(all_reps)
-fwrite(reps, file.path(SI_TABLES, "test_archetype_misclassification.csv"))
-message("  Saved: test_archetype_misclassification.csv")
 
 # ==============================================================================
 # Summary — sign preservation and relative attenuation vs. baseline
@@ -409,11 +417,11 @@ plot_dt <- reps[coef %in% COEF_KEY & !is.na(estimate)]
 plot_dt[, direction := fifelse(grepl("^b_up", coef),
                                "\u03b2\u2191", "\u03b2\u2193")]
 plot_dt[, skill_type := fcase(
-  grepl("SC_Scaffolding",    coef), "Spec.\nsocio-cog.",
-  grepl("SC_Specialized",    coef), "Gen.\nsocio-cog.",
-  grepl("Physical_Terminal", coef), "Physical-\nsensory")]
+  grepl("SC_General",    coef), "Gen.\nsocio-cog.",
+  grepl("SC_Specialized",    coef), "Spec.\nsocio-cog.",
+  grepl("Physical_Terminal", coef), "Sensory-\nphysical")]
 plot_dt[, skill_type := factor(skill_type,
-  levels = c("Spec.\nsocio-cog.", "Gen.\nsocio-cog.", "Physical-\nsensory"))]
+  levels = c("Gen.\nsocio-cog.", "Spec.\nsocio-cog.", "Sensory-\nphysical"))]
 plot_dt[, direction  := factor(direction,
   levels = c("\u03b2\u2191", "\u03b2\u2193"))]
 plot_dt[, flow_label := factor(
@@ -472,12 +480,12 @@ make_section <- function(flow_name, panel_name) {
       base_ref[, direction := fifelse(grepl("^b_up", coef),
                                       "\u03b2\u2191", "\u03b2\u2193")]
       base_ref[, skill_type := fcase(
-        grepl("SC_Scaffolding",    coef), "Spec.\nsocio-cog.",
-        grepl("SC_Specialized",    coef), "Gen.\nsocio-cog.",
-        grepl("Physical_Terminal", coef), "Physical-\nsensory")]
+        grepl("SC_General",    coef), "Gen.\nsocio-cog.",
+        grepl("SC_Specialized",    coef), "Spec.\nsocio-cog.",
+        grepl("Physical_Terminal", coef), "Sensory-\nphysical")]
       base_ref[, skill_type := factor(skill_type,
-        levels = c("Spec.\nsocio-cog.", "Gen.\nsocio-cog.",
-                   "Physical-\nsensory"))]
+        levels = c("Gen.\nsocio-cog.", "Spec.\nsocio-cog.",
+                   "Sensory-\nphysical"))]
       base_ref[, direction := factor(direction,
         levels = c("\u03b2\u2191", "\u03b2\u2193"))]
 
@@ -535,7 +543,7 @@ for (fl in c("adoption", "abandonment")) {
       message(sprintf("\n  %s | %s | contamination = %.0f%%",
                       toupper(fl), pnl, p * 100))
       tbl <- summ[flow == fl & panel == pnl & p_contam == p &
-                    coef %in% c("b_up_SC_Scaffolding",
+                    coef %in% c("b_up_SC_General",
                                 "b_up_SC_Specialized",
                                 "b_up_Physical_Terminal"),
                   .(coef,
@@ -545,7 +553,7 @@ for (fl in c("adoption", "abandonment")) {
                     sign_pres = round(sign_pres, 3))]
       if ("pct_attenuation" %in% names(summ)) {
         atten <- summ[flow == fl & panel == pnl & p_contam == p &
-                        coef %in% c("b_up_SC_Scaffolding",
+                        coef %in% c("b_up_SC_General",
                                     "b_up_SC_Specialized",
                                     "b_up_Physical_Terminal"),
                       .(coef, pct_atten = round(pct_attenuation, 1))]
