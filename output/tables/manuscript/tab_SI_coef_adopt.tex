@@ -1,0 +1,38 @@
+\begin{table}[H]
+\centering
+\caption{\textbf{Complementary log-log gravity model estimates for skill adoption.} The outcome is $Y^{\mathrm{adopt}}_{ijs} = 1$ if target occupation $j$ crosses the $\mathrm{RCA} \geq 1$ specialization threshold for skill $s$ by endline ($t_1 = 2024$), conditional on not being specialized at baseline ($t_0 = 2015$). Standard errors in parentheses, clustered three-way by source occupation, target occupation, and skill. $n \approx 21{,}546{,}090$ directed dyadic observations. O*NET, 2015--2024.}
+\label{tab:SI_coef_adopt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{3}{c}{Panel A: Source + Skill Fixed Effects}
+ & \multicolumn{3}{c}{Panel B: Target + Skill Fixed Effects} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+ & Gen.\ SC & Spec.\ SC & Physical
+ & Gen.\ SC & Spec.\ SC & Physical \\
+\midrule
+Upward status gap slope ($\hat{\beta}^{\uparrow}$)
+  & $0.187^{***}$ & $0.244^{***}$ & $-0.322^{***}$
+  & $0.147^{***}$ & $0.184^{***}$ & $-0.310^{***}$ \\
+  & $(0.034)$ & $(0.042)$ & $(0.048)$
+  & $(0.030)$ & $(0.037)$ & $(0.042)$ \\[4pt]
+Downward status gap slope ($\hat{\beta}^{\downarrow}$)
+  & $0.118^{**}$ & $0.218^{***}$ & $-0.076^{\dagger}$
+  & $-0.001$ & $0.109^{***}$ & $-0.157^{***}$ \\
+  & $(0.045)$ & $(0.051)$ & $(0.042)$
+  & $(0.022)$ & $(0.032)$ & $(0.033)$ \\[4pt]
+Status boundary effect ($\hat{\kappa}$)
+  & $-0.062^{*}$ & $-0.093^{**}$ & $0.019$
+  & $-0.025$ & $-0.061^{*}$ & $0.027$ \\
+  & $(0.024)$ & $(0.033)$ & $(0.037)$
+  & $(0.021)$ & $(0.029)$ & $(0.040)$ \\[4pt]
+Skill profile distance ($\hat{\delta}$)
+  & $-0.960^{***}$ & $-1.862^{***}$ & $-1.119^{***}$
+  & $-1.097^{***}$ & $-1.915^{***}$ & $-1.340^{***}$ \\
+  & $(0.159)$ & $(0.245)$ & $(0.227)$
+  & $(0.155)$ & $(0.247)$ & $(0.228)$ \\
+\bottomrule
+\multicolumn{7}{l}{\footnotesize $^{***}p<0.001$; $^{**}p<0.01$; $^{*}p<0.05$; $^{\dagger}p<0.10$.} \\
+\multicolumn{7}{l}{\footnotesize Gen.~SC = General socio-cognitive; Spec.~SC = Specialized socio-cognitive; Physical = Sensory-physical.}
+\end{tabular}
+\end{table}

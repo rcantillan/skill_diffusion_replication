@@ -1,0 +1,86 @@
+\begin{table}[H]
+\centering
+\caption{\textbf{Robustness to implicit source-multiplicity weighting.} Baseline reproduces the corresponding coefficient from Tables~\ref{tab:SI_coef_adopt} and~\ref{tab:SI_coef_aband}; Weighted re-estimates the identical model with frequency weights $w_{ij} = 1/n_{js}$, so each realized (target, skill) event contributes equally to the likelihood regardless of source-pool size. Panel~A: source~$+$~skill fixed effects. Panel~B: target~$+$~skill fixed effects. Standard errors in parentheses, clustered three-way by source occupation, target occupation, and skill. O*NET, 2015--2024.}
+\label{tab:SI_weighting}
+\renewcommand{\arraystretch}{1.05}
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\begin{tabular}{llclcc}
+\toprule
+Flow & Skill class & Panel & Term & Baseline & Weighted ($1/n_{js}$) \\
+\midrule
+
+%--- Adoption Panel A ---
+Adoption & Spec.\ SC & Panel A
+   & $\hat{\beta}^{\uparrow}$
+   & $\phantom{-}0.244\ (0.042)$ & $\phantom{-}0.229\ (0.042)$ \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $\phantom{-}0.218\ (0.051)$ & $\phantom{-}0.203\ (0.051)$ \\[4pt]
+ & Gen.\ SC & Panel A
+   & $\hat{\beta}^{\uparrow}$
+   & $\phantom{-}0.187\ (0.034)$ & $\phantom{-}0.189\ (0.033)$ \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $\phantom{-}0.118\ (0.045)$ & $\phantom{-}0.107\ (0.045)$ \\[4pt]
+ & Physical & Panel A
+   & $\hat{\beta}^{\uparrow}$
+   & $-0.322\ (0.048)$ & $-0.327\ (0.048)$ \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $-0.076\ (0.042)$ & $-0.085\ (0.041)$ \\
+\cmidrule(lr){2-6}
+%--- Adoption Panel B ---
+  & Spec.\ SC & Panel B
+   & $\hat{\beta}^{\uparrow}$
+   & $\phantom{-}0.184\ (0.037)$ & $\phantom{-}0.177\ (0.038)$ \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $\phantom{-}0.109\ (0.032)$ & $\phantom{-}0.105\ (0.031)$ \\[4pt]
+ & Gen.\ SC & Panel B
+   & $\hat{\beta}^{\uparrow}$
+   & $\phantom{-}0.147\ (0.030)$ & $\phantom{-}0.153\ (0.030)$ \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $-0.001\ (0.022)$ & $\phantom{-}0.001\ (0.022)$ \\[4pt]
+ & Physical & Panel B
+   & $\hat{\beta}^{\uparrow}$
+   & $-0.310\ (0.042)$ & $-0.310\ (0.042)$ \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $-0.157\ (0.033)$ & $-0.157\ (0.032)$ \\
+\midrule
+
+%--- Abandonment Panel A ---
+Abandonment & Spec.\ SC & Panel A
+   & $\hat{\beta}^{\uparrow}$
+   & $-0.258\ (0.043)$ & $-0.253\ (0.042)$ \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $-0.281\ (0.033)$ & $-0.282\ (0.032)$ \\[4pt]
+ & Gen.\ SC & Panel A
+   & $\hat{\beta}^{\uparrow}$
+   & $-0.243\ (0.035)$ & $-0.248\ (0.035)$ \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $-0.227\ (0.031)$ & $-0.229\ (0.031)$ \\[4pt]
+ & Physical & Panel A
+   & $\hat{\beta}^{\uparrow}$
+   & $\phantom{-}0.095\ (0.043)$ & $\phantom{-}0.089\ (0.042)$ \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $-0.006\ (0.040)$ & $-0.009\ (0.038)$ \\
+\cmidrule(lr){2-6}
+%--- Abandonment Panel B ---
+  & Spec.\ SC & Panel B
+   & $\hat{\beta}^{\uparrow}$
+   & $-0.098\ (0.034)$ & $-0.092\ (0.033)$ \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $-0.100\ (0.024)$ & $-0.096\ (0.023)$ \\[4pt]
+ & Gen.\ SC & Panel B
+   & $\hat{\beta}^{\uparrow}$
+   & $-0.094\ (0.026)$ & $-0.097\ (0.026)$ \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $-0.046\ (0.018)$ & $-0.043\ (0.017)$ \\[4pt]
+ & Physical & Panel B
+   & $\hat{\beta}^{\uparrow}$
+   & $\phantom{-}0.198\ (0.041)$ & $\phantom{-}0.200\ (0.041)$ \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $\phantom{-}0.167\ (0.034)$ & $\phantom{-}0.169\ (0.033)$ \\
+\bottomrule
+\multicolumn{6}{l}{\footnotesize Spec.~SC = Specialized socio-cognitive; Gen.~SC = General socio-cognitive.} \\
+\multicolumn{6}{l}{\footnotesize All 24 slope parameters preserve sign; mean magnitude change $3.7\%$; maximum $11.8\%$.} \\
+\multicolumn{6}{l}{\footnotesize $^{a}$ Statistically indistinguishable from zero in both specifications ($p>0.05$).} \\
+\end{tabular}
+\end{table}

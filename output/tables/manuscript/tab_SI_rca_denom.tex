@@ -1,0 +1,119 @@
+\begin{table}[H]
+\centering
+\caption{\textbf{Robustness of the status-gap gradient to RCA's denominator construction.} For each flow, panel, and skill class, Standard reproduces the corresponding coefficient from Tables~\ref{tab:SI_coef_adopt} and~\ref{tab:SI_coef_aband}; Fixed denom.\ holds the economy-wide RCA denominator at its 2015 value; Raw imp.\ uses the raw, unnormalized change in O*NET importance ratings, z-scored within each flow prior to estimation (sign-adjusted for the abandonment flow; see text). The final column indicates whether each alternative specification agrees in sign with the standard (\checkmark) or not (\texttimes). Panel~A: source~$+$~skill fixed effects. Panel~B: target~$+$~skill fixed effects. Standard errors in parentheses, clustered three-way by source occupation, target occupation, and skill. O*NET, 2015--2024.}
+\label{tab:SI_rca_denom}
+\renewcommand{\arraystretch}{1.05}
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\begin{tabular}{llclcccc}
+\toprule
+Flow & Skill class & Panel & Term
+  & Standard & Fixed denom. & Raw imp.
+  & \multicolumn{1}{c}{Sign} \\
+  & & & & & & & \multicolumn{1}{c}{match} \\
+\midrule
+
+%--- Adoption | Panel A ---
+Adoption & Spec.\ SC & A
+   & $\hat{\beta}^{\uparrow}$
+   & $\phantom{-}0.244\ (0.042)$ & $\phantom{-}0.219\ (0.041)$ & $\phantom{-}0.020\ (0.017)$
+   & \checkmark\checkmark \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $\phantom{-}0.218\ (0.051)$ & $\phantom{-}0.207\ (0.049)$ & $-0.042\ (0.021)$
+   & \checkmark\texttimes \\[4pt]
+ & Gen.\ SC & A
+   & $\hat{\beta}^{\uparrow}$
+   & $\phantom{-}0.187\ (0.034)$ & $\phantom{-}0.179\ (0.031)$ & $\phantom{-}0.019\ (0.016)$
+   & \checkmark\checkmark \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $\phantom{-}0.118\ (0.045)$ & $\phantom{-}0.098\ (0.043)$ & $-0.052\ (0.021)$
+   & \checkmark\texttimes \\[4pt]
+ & Physical & A
+   & $\hat{\beta}^{\uparrow}$
+   & $-0.322\ (0.048)$ & $-0.296\ (0.047)$ & $-0.058\ (0.016)$
+   & \checkmark\checkmark \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $-0.076\ (0.042)$ & $-0.059\ (0.047)$ & $-0.072\ (0.020)$
+   & \checkmark\checkmark \\
+
+\cmidrule(lr){2-8}
+
+%--- Adoption | Panel B ---
+  & Spec.\ SC & B
+   & $\hat{\beta}^{\uparrow}$
+   & $\phantom{-}0.184\ (0.037)$ & $\phantom{-}0.168\ (0.038)$ & $\phantom{-}0.015\ (0.013)$
+   & \checkmark\checkmark \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $\phantom{-}0.109\ (0.032)$ & $\phantom{-}0.108\ (0.031)$ & $\phantom{-}0.020\ (0.007)$
+   & \checkmark\checkmark \\[4pt]
+ & Gen.\ SC & B
+   & $\hat{\beta}^{\uparrow}$
+   & $\phantom{-}0.147\ (0.030)$ & $\phantom{-}0.144\ (0.029)$ & $\phantom{-}0.017\ (0.010)$
+   & \checkmark\checkmark \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $-0.001\ (0.022)$ & $-0.010\ (0.020)$ & $\phantom{-}0.001\ (0.006)$
+   & \checkmark\texttimes \\[4pt]
+ & Physical & B
+   & $\hat{\beta}^{\uparrow}$
+   & $-0.310\ (0.041)$ & $-0.283\ (0.039)$ & $-0.016\ (0.009)$
+   & \checkmark\checkmark \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $-0.157\ (0.032)$ & $-0.132\ (0.036)$ & $-0.034\ (0.011)$
+   & \checkmark\checkmark \\
+
+\midrule
+
+%--- Abandonment | Panel A ---
+Abandonment & Spec.\ SC & A
+   & $\hat{\beta}^{\uparrow}$
+   & $-0.258\ (0.043)$ & $-0.253\ (0.040)$ & $\phantom{-}0.001\ (0.014)$
+   & \checkmark\texttimes \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $-0.281\ (0.033)$ & $-0.258\ (0.035)$ & $-0.052\ (0.017)$
+   & \checkmark\checkmark \\[4pt]
+ & Gen.\ SC & A
+   & $\hat{\beta}^{\uparrow}$
+   & $-0.243\ (0.035)$ & $-0.232\ (0.036)$ & $-0.021\ (0.015)$
+   & \checkmark\checkmark \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $-0.226\ (0.031)$ & $-0.216\ (0.032)$ & $-0.036\ (0.017)$
+   & \checkmark\checkmark \\[4pt]
+ & Physical & A
+   & $\hat{\beta}^{\uparrow}$
+   & $\phantom{-}0.095\ (0.043)$ & $\phantom{-}0.107\ (0.045)$ & $\phantom{-}0.067\ (0.017)$
+   & \checkmark\checkmark \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$\rlap{$^{a}$}
+   & $-0.006\ (0.040)$ & $\phantom{-}0.018\ (0.043)$ & $\phantom{-}0.030\ (0.015)$
+   & \texttimes\texttimes \\
+
+\cmidrule(lr){2-8}
+
+%--- Abandonment | Panel B ---
+  & Spec.\ SC & B
+   & $\hat{\beta}^{\uparrow}$
+   & $-0.098\ (0.034)$ & $-0.102\ (0.031)$ & $-0.015\ (0.008)$
+   & \checkmark\checkmark \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $-0.100\ (0.024)$ & $-0.099\ (0.025)$ & $-0.042\ (0.009)$
+   & \checkmark\checkmark \\[4pt]
+ & Gen.\ SC & B
+   & $\hat{\beta}^{\uparrow}$
+   & $-0.094\ (0.026)$ & $-0.096\ (0.027)$ & $-0.035\ (0.007)$
+   & \checkmark\checkmark \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $-0.046\ (0.017)$ & $-0.054\ (0.019)$ & $-0.027\ (0.008)$
+   & \checkmark\checkmark \\[4pt]
+ & Physical & B
+   & $\hat{\beta}^{\uparrow}$
+   & $\phantom{-}0.198\ (0.041)$ & $\phantom{-}0.194\ (0.041)$ & $\phantom{-}0.073\ (0.013)$
+   & \checkmark\checkmark \\[2pt]
+ & & & $\hat{\beta}^{\downarrow}$
+   & $\phantom{-}0.167\ (0.034)$ & $\phantom{-}0.171\ (0.036)$ & $\phantom{-}0.034\ (0.006)$
+   & \checkmark\checkmark \\
+
+\bottomrule
+\multicolumn{8}{l}{\footnotesize Spec.~SC = Specialized socio-cognitive; Gen.~SC = General socio-cognitive.} \\
+\multicolumn{8}{l}{\footnotesize Sign match column: first symbol = Fixed denom.\ vs.\ Standard; second = Raw imp.\ vs.\ Standard.} \\
+\multicolumn{8}{l}{\footnotesize $^{a}$ Statistically indistinguishable from zero in both specifications ($p>0.05$); not interpreted substantively.} \\
+\end{tabular}
+\end{table}
