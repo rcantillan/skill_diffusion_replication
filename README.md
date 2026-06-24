@@ -8,7 +8,7 @@
 
 ## Overview
 
-This repository contains all code and derived data necessary to reproduce the analyses, figures, and supplementary materials reported in the paper. The project documents asymmetric directional flows of skill requirements across the occupational hierarchy: socio-cognitive skills concentrate upward while Sensory-physical skills accumulate downward — and critically, both adoption and abandonment reinforce this divergence rather than attenuate it. This bilateral pattern constitutes a structural Matthew effect in occupational skill content.
+This repository contains all code and derived data necessary to reproduce the analyses, figures, and supplementary materials reported in the paper. The project documents asymmetric directional flows of skill requirements across the occupational hierarchy: socio-cognitive skills concentrate upward while Sensory-physical skills accumulate downward. Both adoption and abandonment reinforce this divergence. We term this bilateral pattern a "Matthew effect in occupational skill content".
 
 The core analytical contribution is a gravity model with a bilateral, directional specification applied to approximately 40 million directed dyadic observations across 741 occupations and 160 skill requirements from O\*NET (2015–2024), estimated via `feglm` with a complementary log-log link and three-way clustered standard errors.
 
@@ -141,32 +141,6 @@ Rscript R/07_fig1_descriptive.R
 Rscript R/08_fig2_regression.R
 ```
 
-### Exporting assets to the Overleaf manuscript
-
-After the main and SI scripts have run, mirror the generated figures and
-tables into the Overleaf project folders (`../figures/` and `../tables/`,
-which `draft/draft.tex` includes via `\input{figures/...}` /
-`\input{tables/...}`):
-
-```bash
-Rscript R/10_export_manuscript_figures.R   # copies figure PDFs -> ../figures/
-Rscript R/11_make_manuscript_tables.R      # regenerates the 7 SM tables -> ../tables/
-```
-
-Override the destinations with the `MANUSCRIPT_FIGS` / `MANUSCRIPT_TABLES`
-environment variables if your layout differs. Caveats: `figures/illustration.png`
-(Fig. 1 schematic) is hand-made and not produced by the pipeline; the two
-`fig_SI_alt_status_{Adoption,Abandonment}.pdf` panels must exist in
-`output/figures/si/` (the current `SI_09` writes a single combined figure); and
-`R/11` regenerates `tab_SI_gradients.tex` and `tab_SI_occ_desc.tex` from current
-pipeline output, which may differ slightly from the committed manuscript
-snapshot — re-check the S2.3 prose after running.
-
-For computationally intensive steps, redirect output to `logs/`:
-
-```bash
-nohup Rscript R/03_nestedness.R > logs/nestedness.log 2>&1 &
-```
 
 ### Supplementary Information scripts
 
@@ -197,14 +171,6 @@ The main models are estimated with `feglm(..., family = binomial("cloglog"))` fr
 
 All models use three-way clustered standard errors (source × target × skill).
 
-### Regenerating the interactive explorer
-
-```bash
-Rscript R/SI/explorer/generate_triads_json.R
-# Copy to docs/ for GitHub Pages:
-cp R/SI/explorer/triads_explorer.html docs/index.html
-cp R/SI/explorer/triads_explorer.json docs/triads_explorer.json
-```
 
 ---
 
@@ -217,7 +183,6 @@ cp R/SI/explorer/triads_explorer.json docs/triads_explorer.json
 | Abandonment | Socio-cognitive | β↑ < 0 | Shedding facilitated downward |
 | Abandonment | Sensory-physical | β↑ > 0 | Shedding blocked downward |
 
-The directional model recovers 50–115% of the observed Q5–Q1 gradients across flows and skill types. Occupational status index: PC1 explains 75.0% of variance in wage × education × cognitive content.
 
 ---
 
