@@ -207,11 +207,9 @@ build_panel <- function(ct, rug_segs, title, y_label,
                label = paste0("\u03b2\u2193 = ", fmt_coef_se(b, se)))
   }))
 
-  ann_up <- ann_up[order(-coef_val)]
   ann_up[, y_pos := y_floor_labels + (.I - 1) * Y_SEP]
   ann_up[, x_pos := X_RIGHT]
 
-  ann_dn <- ann_dn[order(-coef_val)]
   ann_dn[, y_pos := y_floor_labels + (.I - 1) * Y_SEP]
   ann_dn[, x_pos := X_LEFT]
 
